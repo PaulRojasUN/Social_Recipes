@@ -10,8 +10,8 @@ urlpatterns = [
     path('create_recipe/', views.create_recipe, name='create_recipe'),
     path('edit_recipe/<int:id>/', views.edit_recipe, name='edit_recipe'),
     path('view_recipe/<int:id>/', views.view_recipe, name='view_recipe'),
-    path('view_account/<int:id>/', views.view_account, name='view_account'),
-    path('edit_account/<int:id>/', views.edit_account , name='edit_account'),
+    path('view_account/<slug:username>/', views.view_account, name='view_account'),
+    path('edit_account/<slug:username>/', views.edit_account , name='edit_account'),
     path('social/<int:id>/', views.social, name='social'),
     path('filter/', views.filter, name='filter'),
 ]

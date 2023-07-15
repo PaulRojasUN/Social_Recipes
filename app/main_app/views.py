@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 ###
 from django.http import HttpResponse
-
+from main_app.forms import CustomUserCreationForm
 
 ### Registration ###
 
@@ -20,18 +20,17 @@ def home(request):
  
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST) 
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
-            user = authenticate(username = username, password = password)
+            user = authenticate(request, username=username, password=password)
             login(request, user)
             return redirect('home')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
-
 
 ###  ///////////////////////// ###
 
@@ -54,15 +53,15 @@ def view_recipe(request, id):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-def view_account(request, id):
+def view_account(request, username):
     if request.method == 'GET':
-        return HttpResponse('view account' + str(id));
+        return HttpResponse('view account ' + str(username));
     else:
         return HttpResponse('Unsupported method', status=405);
 
-def edit_account(request, id):
+def edit_account(request, username):
     if request.method == 'GET':
-        return HttpResponse('edit account' + str(id));
+        return HttpResponse('edit account ' + str(username));
     else:
         return HttpResponse('Unsupported method', status=405);
 
