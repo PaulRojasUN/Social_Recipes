@@ -79,6 +79,9 @@ class TagPost(models.Model):
 class TagUser(models.Model):
     tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE);
+    
+    def __str__(self):
+        return 'Tag: ' + str(self.tag_id.name) + ' - User: ' + str(self.user_id.first_name);
 
 
 ### ////////////// ###

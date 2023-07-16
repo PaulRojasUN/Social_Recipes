@@ -24,3 +24,4 @@ class CustomUserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    

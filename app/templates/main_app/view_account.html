@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+{% block content %}
+<div>
+    <h1>VIEW ACCOUNT</h1>
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input name="name" type="text" value={{name}} class="form-control" disabled>
+
+        <label for="username">Username</label>
+        <input name="username"type="text" value={{username}} class="form-control" disabled>
+
+        <label for="tags">Interest Tags</label>
+        <ul>
+            {% for tag in tags %}
+                <li>{{tag.tag_id__name}}</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'social' username %}">Social</a>
+        <br>
+        <a href="{% url 'filter' %}?user={{ username }}">User's Posts</a>
+        <br>
+        <a href="{% url 'home' %}">Back</a>
+    </div>
+</div>
+{% endblock %}

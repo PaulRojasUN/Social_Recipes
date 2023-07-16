@@ -12,6 +12,6 @@ urlpatterns = [
     path('view_recipe/<int:id>/', views.view_recipe, name='view_recipe'),
     path('view_account/<slug:username>/', views.view_account, name='view_account'),
     path('edit_account/<slug:username>/', views.edit_account , name='edit_account'),
-    path('social/<int:id>/', views.social, name='social'),
+    path('social/<slug:username>/', views.social, name='social'),
     path('filter/', views.filter, name='filter'),
 ]

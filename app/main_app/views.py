@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from .models import CustomUser, TagUser
 ###
 from django.http import HttpResponse
 from main_app.forms import CustomUserCreationForm
@@ -53,9 +53,21 @@ def view_recipe(request, id):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@login_required
 def view_account(request, username):
     if request.method == 'GET':
-        return HttpResponse('view account ' + str(username));
+        try:
+            user = CustomUser.objects.get(username=username);
+            tags = TagUser.objects.filter(user_id__id=user.id).values('tag_id__name');
+            
+            context = {'name':user.first_name,
+                        'username':user.username,
+                        'tags':tags,
+                        };
+            return render(request, 'main_app/view_account.html', context);
+        except Exception as e:
+            print(e);
+            return HttpResponse('User was not found', status=404);
     else:
         return HttpResponse('Unsupported method', status=405);
 
@@ -65,9 +77,9 @@ def edit_account(request, username):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-def social(request, id):
+def social(request, username):
     if request.method == 'GET':
-        return HttpResponse('social' + str(id));
+        return HttpResponse('social ' + str(username));
     else:
         return HttpResponse('Unsupported method', status=405);
 
