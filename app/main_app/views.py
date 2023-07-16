@@ -13,10 +13,14 @@ def home(request):
     name = "";
     try:
         name = request.user.username;
-        print(name)
+        context = {
+            'username':name, 
+        };
+        return render(request, "main_app/home_page.html", context);
     except Exception as e:
         print(e);
-    return render(request, "registration/home_page.html", {name:name})
+        return HttpResponse('An error has ocurred', status=404);
+    
  
 def register(request):
     if request.method == 'POST':
@@ -60,7 +64,8 @@ def view_account(request, username):
             user = CustomUser.objects.get(username=username);
             tags = TagUser.objects.filter(user_id__id=user.id).values('tag_id__name');
             
-            context = {'name':user.first_name,
+            context = {
+                        'name':user.first_name,
                         'username':user.username,
                         'tags':tags,
                         };
@@ -95,3 +100,9 @@ def filter(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+
+def search(request):
+    if request.method == 'GET':
+        return HttpResponse('search');
+    else:
+        return HttpResponse('Unsupported method', status=405);

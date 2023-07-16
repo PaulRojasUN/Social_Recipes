@@ -14,4 +14,5 @@ urlpatterns = [
     path('edit_account/<slug:username>/', views.edit_account , name='edit_account'),
     path('social/<slug:username>/', views.social, name='social'),
     path('filter/', views.filter, name='filter'),
+    path('search/', views.search, name='search'),
 ]
