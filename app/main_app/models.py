@@ -22,6 +22,7 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, username, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('first_name', 'Admin')
         return self.create_user(username, password, **extra_fields)
 
 
@@ -40,6 +41,9 @@ class CustomUser(AbstractUser):
 class FollowingUser(models.Model):
     follower_user_id = models.ForeignKey(CustomUser, related_name='main_app_following_user_follower_user', on_delete=models.CASCADE);
     target_user_id = models.ForeignKey(CustomUser, related_name='main_app_following_user_target_user', on_delete=models.CASCADE);
+
+    def __str__(self):
+        return 'Follower: ' + str(self.follower_user_id.first_name) + ' - ' + 'Target: ' + str(self.target_user_id.first_name);
 
 ### ////////////// ###
 

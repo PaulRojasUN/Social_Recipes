@@ -1,27 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser, TagUser
+from .models import CustomUser, TagUser, FollowingUser
 ###
 from django.http import HttpResponse
 from main_app.forms import CustomUserCreationForm
 
-### Registration ###
 
-@login_required
-def home(request):
-    name = "";
-    try:
-        name = request.user.username;
-        context = {
-            'username':name, 
-        };
-        return render(request, "main_app/home_page.html", context);
-    except Exception as e:
-        print(e);
-        return HttpResponse('An error has ocurred', status=404);
-    
- 
+### RENDERING ENDPOINTS ###
+
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST) 
@@ -36,7 +23,19 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-###  ///////////////////////// ###
+
+@login_required
+def home(request):
+    name = "";
+    try:
+        name = request.user.username;
+        context = {
+            'username':name, 
+        };
+        return render(request, "main_app/home_page.html", context);
+    except Exception as e:
+        print(e);
+        return HttpResponse('An error has ocurred', status=404);
 
 
 def create_recipe(request):
@@ -61,12 +60,18 @@ def view_recipe(request, id):
 def view_account(request, username):
     if request.method == 'GET':
         try:
-            user = CustomUser.objects.get(username=username);
-            tags = TagUser.objects.filter(user_id__id=user.id).values('tag_id__name');
+            logged_user = request.user;
+            target_user = CustomUser.objects.get(username=username);
+            tags = TagUser.objects.filter(user_id__id=target_user.id).values('tag_id__name');
             
+            print(target_user.username);
+            print(logged_user.username);
+
+
             context = {
-                        'name':user.first_name,
-                        'username':user.username,
+                        'name':target_user.first_name,
+                        'target_username':target_user.username,
+                        'logged_username':logged_user.username,
                         'tags':tags,
                         };
             return render(request, 'main_app/view_account.html', context);
@@ -84,7 +89,28 @@ def edit_account(request, username):
 
 def social(request, username):
     if request.method == 'GET':
-        return HttpResponse('social ' + str(username));
+        try:
+            
+            target_user = CustomUser.objects.get(username=username);
+
+            target_user_name = target_user.first_name;
+
+            target_id = target_user.id;
+
+            follower_users = FollowingUser.objects.filter(follower_user_id__id=target_id).values('target_user_id__first_name');
+
+            target_users = FollowingUser.objects.filter(target_user_id__id=target_id).values('follower_user_id__first_name');
+
+            context = {
+                'target_user_name': target_user_name,
+                'follower_users': follower_users,
+                'target_users':target_users
+            }
+
+            return render(request, 'main_app/social.html', context);
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=404);
     else:
         return HttpResponse('Unsupported method', status=405);
 
@@ -106,3 +132,5 @@ def search(request):
         return HttpResponse('search');
     else:
         return HttpResponse('Unsupported method', status=405);
+
+### ////////////////// ###

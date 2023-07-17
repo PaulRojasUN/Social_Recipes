@@ -1,0 +1,19 @@
+{% extends 'base.html' %} 
+{% block content %}
+<div>
+    <h1>Social</h1>
+    <strong>List of users that are followed by {{ target_user_name }}</strong>
+    <ul>
+        {% for user in follower_users %}
+            <li>{{user.target_user_id__first_name}}</ul>
+        {% endfor %}
+    </ul>
+    <hr>
+    <strong> List of users that follow {{ target_user_name }}</strong>
+    <ul>
+        {% for user in target_users %}
+            <li>{{user.follower_user_id__first_name}}</ul>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'base.html' %} 
+{% load static %}
 {% block content %}
 <div>
     <h1>VIEW ACCOUNT</h1>
@@ -7,7 +8,7 @@
         <input name="name" type="text" value={{name}} class="form-control" disabled>
 
         <label for="username">Username</label>
-        <input name="username"type="text" value={{username}} class="form-control" disabled>
+        <input id="target_username" name="username" type="text" value={{target_username}} class="form-control" disabled>
 
         <label for="tags">Interest Tags</label>
         <ul>
@@ -15,11 +16,19 @@
                 <li>{{tag.tag_id__name}}</li>
             {% endfor %}
         </ul>
-        <a href="{% url 'social' username %}">Social</a>
+        <a href="{% url 'social' target_username %}">Social</a>
         <br>
-        <a href="{% url 'filter' %}?user={{ username }}">User's Posts</a>
+        <a href="{% url 'filter' %}?user={{ target_username }}">User's Posts</a>
+        <br>
+        <form action="{% url 'add_following' %}" method="post">
+            {% csrf_token %}
+            <input name="follower_user" type="hidden" value="{{ logged_username }}"">
+            <input name="target_user" type="hidden" value="{{ target_username }}"">
+            <input id="btn_follow" type="submit" value="Follow User">
+        </form>
         <br>
         <a href="{% url 'home' %}">Back</a>
     </div>
+    <script type="text/javascript" src='{% static "js/main_app/view_account.js" %}'></script>
 </div>
 {% endblock %}
