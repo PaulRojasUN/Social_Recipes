@@ -87,6 +87,7 @@ def edit_account(request, username):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@login_required
 def social(request, username):
     if request.method == 'GET':
         try:
@@ -131,6 +132,19 @@ def search(request):
     if request.method == 'GET':
         return HttpResponse('search');
     else:
+        return HttpResponse('Unsupported method', status=405);
+
+
+def tags_manager(request):
+    if request.method == 'GET':
+        return HttpResponse('Tags Manager');
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+def admin_manage_users(request):
+    if request.method == 'GET':
+        return render(request, 'main_app/admin_manage_users.html');
+    else:   
         return HttpResponse('Unsupported method', status=405);
 
 ### ////////////////// ###

@@ -17,11 +17,16 @@ urlpatterns = [
     path('social/<slug:username>/', views.social, name='social'),
     path('filter/', views.filter, name='filter'),
     path('search/', views.search, name='search'),
-
+    path('tags_manager/', views.tags_manager, name='tags_manager'),
+    path('admin_manage_users/', views.admin_manage_users, name='admin_manage_users'),
+    
     # POST ENDPOINTS
     path('add_following/', post_views.add_following, name='add_following'),
 
     # UTILS
-
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),
+    path('predict_username/<slug:username>', view_utils.predict_username, name='predict_username'),
+    path('get_user_username/<slug:username>', view_utils.get_user_username, name='get_user_username'),
+    path('prepare_admin_manage_users/<slug:username>', view_utils.prepare_admin_manage_users, name='prepare_admin_manage_users'),
+    path('add_remove_moderator/', view_utils.add_remove_moderator, name='add_remove_moderator'),
 ]

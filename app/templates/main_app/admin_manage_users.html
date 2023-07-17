@@ -1,0 +1,36 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block content %}
+<h1>MANAGE USERS</h1>
+<div class="form-group">
+
+    <label for="input_username">Search User</label>
+    <input id="input_username" name="input_username"type="text" placeholder="username">
+    <button id="btn_search">Search</button>
+
+    <hr>
+
+    <label for="input_name">Name</label>
+    <input id="input_name"  name="input_name" type="text" disabled>
+
+    <br>
+
+    <label for="input_email">Email</label>
+    <input id="input_email" name="input_email" type="text" disabled>
+
+    <br>
+
+    <label for="input_role">Current Role</label>
+    <input id="input_role" name="input_role" type="text" disabled>
+
+    <br>
+
+    <button id="btn_role">PLACEHOLDER</button>
+
+    <br>
+
+    <button id="brn_delete">DELETE USER</button>
+
+</div>
+<script type="text/javascript" src='{% static "js/main_app/admin_manage_users.js" %}'></script>
+{% endblock %}

@@ -6,7 +6,12 @@
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db.models.signals import post_migrate, post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import user_passes_test
 import uuid
+
 
 ### User ###
 
@@ -21,7 +26,7 @@ class CustomUserManager(BaseUserManager):
 
     def create_superuser(self, username, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_superuser', True)   
         extra_fields.setdefault('first_name', 'Admin')
         return self.create_user(username, password, **extra_fields)
 
@@ -47,6 +52,32 @@ class FollowingUser(models.Model):
 
 ### ////////////// ###
 
+
+### User Groups ###
+
+@receiver(post_migrate)
+def create_users_groups(sender, **kwargs):
+    users_groups = ["regular_users", "moderators", "admin"];
+    for g in users_groups:
+        if not Group.objects.filter(name=g).exists():
+            new_group = Group(name=g);
+            new_group.save();
+
+@receiver(post_save, sender=CustomUser)
+def Add_Person_To_Clients(sender, instance, created, **kwargs):
+    if created:
+        if instance.is_staff == True and instance.is_superuser == True:
+            group_name = "admin";
+        else:
+            group_name = "regular_users";
+        
+        if Group.objects.filter(name=group_name).exists():
+                group = Group.objects.get(name=group_name);
+                instance.groups.add(group);
+        else:
+            print("User could not be added to admin gruop");
+
+### //////////////// ###
 
 
 
