@@ -64,14 +64,6 @@ class ClassifiedTag(models.Model):
 class UnclassifiedTag(models.Model):
     tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);
 
-class TagRecipe(models.Model):
-    tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);
-    recipe_id = models.ForeignKey('Recipe', on_delete=models.CASCADE);
-
-    def __str__(self):
-        return "t:" + str(self.tag_id) + " - " + "r:" +  str(self.recipe_id);
-
-
 class TagIngredient(models.Model):
     tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);
     ingredient_id = models.ForeignKey('Ingredient', on_delete=models.CASCADE);
@@ -90,21 +82,6 @@ class TagUser(models.Model):
 
 ### ////////////// ###
 
-
-### Recipe ###
-
-class Recipe(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False);
-    name = models.CharField(max_length=64);
-
-    def __str__(self):
-        return self.name;
-
-class RecipeIngredients(models.Model):
-    ingredient_id = models.ForeignKey('Ingredient', on_delete=models.CASCADE);
-    recipe_id = models.ForeignKey('Recipe', on_delete=models.CASCADE);
-
-### ////////////// ###
 
 
 
@@ -130,7 +107,15 @@ class UnclassifiedIngredient(models.Model):
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False);
     author_user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE);
-    recipe_id = models.ForeignKey('Recipe', on_delete=models.CASCADE);
+    recipe_name = models.CharField(max_length=64);
+    body_text = models.TextField();
+    visibility = models.SmallIntegerField();
+    post_date = models.DateField(); 
+
+class PostIngredients(models.Model):
+    ingredient_id = models.ForeignKey('Ingredient', on_delete=models.CASCADE);
+    post_id = models.ForeignKey('Post', on_delete=models.CASCADE);
+
 
 class PostLike(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE);

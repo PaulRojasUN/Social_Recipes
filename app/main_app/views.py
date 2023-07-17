@@ -38,21 +38,21 @@ def home(request):
         return HttpResponse('An error has ocurred', status=404);
 
 
-def create_recipe(request):
+def create_post(request):
     if request.method == 'GET':
-        return HttpResponse('create_recipe');
+        return HttpResponse('create_post');
     else:
         return HttpResponse('Unsupported method', status=405);
 
-def edit_recipe(request, id):
+def edit_post(request, id):
     if request.method == 'GET':
-        return HttpResponse('edit recipe' + str(id));
+        return HttpResponse('edit post' + str(id));
     else:
         return HttpResponse('Unsupported method', status=405);
 
-def view_recipe(request, id):
+def view_post(request, id):
     if request.method == 'GET':
-        return HttpResponse('view recipe' + str(id));
+        return HttpResponse('view post' + str(id));
     else:
         return HttpResponse('Unsupported method', status=405);
 
