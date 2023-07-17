@@ -20,12 +20,12 @@
         <br>
         <a href="{% url 'filter' %}?user={{ target_username }}">User's Posts</a>
         <br>
-        <form action="{% url 'add_following' %}" method="post">
-            {% csrf_token %}
-            <input name="follower_user" type="hidden" value="{{ logged_username }}"">
-            <input name="target_user" type="hidden" value="{{ target_username }}"">
-            <input id="btn_follow" type="submit" value="Follow User">
-        </form>
+
+        <div class="form">
+            <input id="input_follower" name="follower_user" type="hidden" value="{{ logged_username }}"">
+            <input id="input_target" name="target_user" type="hidden" value="{{ target_username }}"">
+            <button id="btn_follow">Follow User</button>
+        </div>
         <br>
         <a href="{% url 'home' %}">Back</a>
     </div>

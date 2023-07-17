@@ -1,10 +1,12 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import FollowingUser, CustomUser
 from django.db.models import Q
 from django.shortcuts import redirect
 
 def add_following(request):
     if request.method == 'POST':
+        print(request.POST['follower_user']);
+
         try:
             follower_username = request.POST['follower_user'];   
             target_username = request.POST['target_user'];   
@@ -22,14 +24,14 @@ def add_following(request):
 
                 FollowingUser.objects.create(follower_user_id=follower_user, target_user_id=target_user);
 
-            
+                return HttpResponse('Added Following', status=252);
             else:
                 obj = FollowingUser.objects.get(Q(follower_user_id__username=follower_username)&
                                                 Q(target_user_id__username=target_username));
                 
                 obj.delete();
 
-            return redirect(request.META['HTTP_REFERER']);
+                return HttpResponse('Deleted Following', status=251);
         except Exception as e:
             print(e);
             return HttpResponse('An error has ocurred', status=404);    
