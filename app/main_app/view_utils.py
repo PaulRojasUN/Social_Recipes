@@ -1,10 +1,12 @@
 from django.http import HttpResponse, JsonResponse
-from .models import FollowingUser, CustomUser
+from .models import FollowingUser, CustomUser, admin_access
 from django.db.models import Q
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 ### View Account ###
 
+@login_required
 def prepare_view_account(request, target_username):
     if request.method == 'GET':
         try:
@@ -32,6 +34,7 @@ def prepare_view_account(request, target_username):
 
 ### Admin Manage Users ###
 
+@user_passes_test(admin_access)
 def predict_username(request, username):
     if request.method == 'GET':
         predicted_usernames = list(CustomUser.objects.filter(username__contains=username).values_list('username', flat=True)[:20]);
@@ -40,6 +43,7 @@ def predict_username(request, username):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@user_passes_test(admin_access)
 def get_user_username(request, username):
     if request.method == 'GET':
         
@@ -73,7 +77,7 @@ def get_user_username(request, username):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-
+@user_passes_test(admin_access)
 def prepare_admin_manage_users(request, username):
     if request.method == 'GET':
         try:
@@ -101,11 +105,14 @@ def prepare_admin_manage_users(request, username):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-
+@user_passes_test(admin_access)
 def add_remove_moderator(request):
     if request.method == 'POST':
         try:
             obj = request.POST;
+
+            print(obj)
+
             username = obj['username'];
 
             user = CustomUser.objects.get(username=username);

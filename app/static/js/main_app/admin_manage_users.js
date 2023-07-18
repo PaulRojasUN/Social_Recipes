@@ -1,8 +1,8 @@
 $(function () {
 
-  const username_parameter = $('#input_username').val();
+  let username_parameter = $('#input_username').val();
 
-
+  if (username_parameter != ''){
     $.ajax({
       url:'/prepare_admin_manage_users/' + username_parameter,
       datatype: 'json',
@@ -18,68 +18,70 @@ $(function () {
         console.log(e);
       }
     })
-
+  }
+    
+  
     $("#btn_search").on('click', ()=>{
 
+        let username_parameter = $('#input_username').val();
 
-      $.ajax({
-        url: '/get_user_username/' + username_parameter,
-        dataType: 'json',
-        type: 'GET',
-        success: function (res) {
-          $("#input_name").val(res['name']);
-          $("#input_email").val(res['email']);
-          $("#input_role").val(res['role']);
-        },
-        error: function (e) {
-          console.log(e);
+        if (username_parameter != ''){
+          $.ajax({
+            url: '/get_user_username/' + username_parameter,
+            dataType: 'json',
+            type: 'GET',
+            success: function (res) {
+              const role = res['role'];
+
+              $("#input_name").val(res['name']);
+              $("#input_email").val(res['email']);
+              $("#input_role").val(role);
+
+              if (role=='moderators'){
+                $('#btn_role').html('Remove from Moderators');
+              } else {
+                $('#btn_role').html('Add to Moderators');
+              }
+
+              $("#btn_role").prop('disabled', false);
+            },
+            error: function (e) {
+              console.log(e);
+            }
+          })
         }
-      })
-
-      // if (username_parameter){
-      //   $.ajax({
-      //     url: '/predict_username/' + username_parameter,
-      //     dataType: 'json',
-      //     type: 'GET',
-      //     success: function (res) {
-      //       $("#input_username").autocomplete({
-      //         source: res
-      //       });
-      //     },
-      //     error: function (e) {
-      //       console.log(e);
-      //     }
-      //   })
-      // }
-      
       });
-
+   
 
       $("#btn_role").on('click', ()=>{
 
+        let username_parameter = $('#input_username').val();
 
-        $.ajax({
-          url: '/add_remove_moderator/',
-          dataType: 'text',
-          type: 'POST',
-          data:{
-            'username_parameter':username_parameter,
-          },
-          success: function (res, status, xhr) {
-            const status_code = xhr.status;
+        if (confirm("Are you sure you want to do that?"))
+        {
+          $.ajax({
+            url: '/add_remove_moderator/',
+            dataType: 'text',
+            type: 'POST',
+            data:{
+              'username':username_parameter,
+            },
+            success: function (res, status, xhr) {
+              const status_code = xhr.status;
 
-            if (status_code == 250){
-              $('#btn_role').html('Remove from Moderators');
-            } else if (status_code == 251) {
-              $('#btn_role').html('Add to Moderators');
-            } else {
-              console.error("An error has ocurred");
+              if (status_code == 250){
+                $('#btn_role').html('Remove from Moderators');
+              } else if (status_code == 251) {
+                $('#btn_role').html('Add to Moderators');
+              } else {
+                console.error("An error has ocurred");
+              }
+            },
+            error: function (e) {
+              console.log(e);
             }
-          },
-          error: function (e) {
-            console.log(e);
-          }
-        })
+          })
+        }
         
         });
 

@@ -9,7 +9,8 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db.models.signals import post_migrate, post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import Group
-from django.contrib.auth.decorators import user_passes_test
+
+
 import uuid
 
 
@@ -76,6 +77,39 @@ def Add_Person_To_Clients(sender, instance, created, **kwargs):
                 instance.groups.add(group);
         else:
             print("User could not be added to admin gruop");
+
+
+def priviliged_access(user):
+    try:
+        if (user.is_authenticated):
+            group_name = user.groups.first().name;
+
+            if group_name == 'moderators' or group_name == 'admin':
+                return True;
+            else:
+                raise Exception('Forbidden');
+        else:
+            raise Exception('Login required');
+    except Exception:
+        return False
+
+
+def admin_access(user):
+    try:
+        if (user.is_authenticated):
+
+            group_name = user.groups.first();
+
+            if group_name == 'admin':
+                return True;
+            else:
+                raise Exception('Forbidden');
+        else:
+            raise Exception('Login required');
+    except Exception:
+        return False
+    
+
 
 ### //////////////// ###
 

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser, TagUser, FollowingUser
+from .models import CustomUser, TagUser, FollowingUser, priviliged_access
 ###
 from django.http import HttpResponse
 from main_app.forms import CustomUserCreationForm
+from django.contrib.auth.decorators import user_passes_test
 
 
 ### RENDERING ENDPOINTS ###
@@ -37,19 +38,21 @@ def home(request):
         print(e);
         return HttpResponse('An error has ocurred', status=404);
 
-
+@login_required
 def create_post(request):
     if request.method == 'GET':
         return HttpResponse('create_post');
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@login_required
 def edit_post(request, id):
     if request.method == 'GET':
         return HttpResponse('edit post' + str(id));
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@login_required
 def view_post(request, id):
     if request.method == 'GET':
         return HttpResponse('view post' + str(id));
@@ -115,6 +118,7 @@ def social(request, username):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@login_required
 def filter(request):
     if request.method == 'GET':
         
@@ -127,20 +131,22 @@ def filter(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-
+@login_required
 def search(request):
     if request.method == 'GET':
         return HttpResponse('search');
     else:
         return HttpResponse('Unsupported method', status=405);
 
-
+@login_required
 def tags_manager(request):
     if request.method == 'GET':
         return HttpResponse('Tags Manager');
     else:
         return HttpResponse('Unsupported method', status=405);
 
+
+@user_passes_test(priviliged_access)
 def admin_manage_users(request):
     if request.method == 'GET':
         return render(request, 'main_app/admin_manage_users.html');
