@@ -1,5 +1,5 @@
 from django.http import HttpResponse, JsonResponse
-from .models import FollowingUser, CustomUser, admin_access
+from .models import FollowingUser, CustomUser, admin_access, Tag, priviliged_access
 from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -149,3 +149,35 @@ def add_remove_moderator(request):
 
 
 ### //////////////////////////////////////////// ####
+
+
+
+### Tags Management ###
+
+@user_passes_test(priviliged_access)
+def create_tag(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+
+            tag_name = obj['tag_name'].lower();
+        
+            if not tag_name:
+                return HttpResponse('Not proper name given', status=460);
+
+            already_exists = Tag.objects.filter(name=tag_name).exists();
+        
+            if already_exists:
+                return HttpResponse('Another tag already has a similar name', status=461);
+            else:
+                Tag.objects.create(name=tag_name);
+                return HttpResponse('Tag was successfully created', status=200);
+    
+        except Exception:
+            return HttpResponse('Bad request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+
+
+########################

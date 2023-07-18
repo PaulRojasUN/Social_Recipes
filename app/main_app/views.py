@@ -153,4 +153,11 @@ def admin_manage_users(request):
     else:   
         return HttpResponse('Unsupported method', status=405);
 
+@user_passes_test(priviliged_access)
+def tags_management(request):
+    if request.method == 'GET':
+        return render(request, 'main_app/tags_management.html');
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
 ### ////////////////// ###

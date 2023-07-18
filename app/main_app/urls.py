@@ -19,6 +19,7 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('tags_manager/', views.tags_manager, name='tags_manager'),
     path('admin_manage_users/', views.admin_manage_users, name='admin_manage_users'),
+    path('tags_management/', views.tags_management, name='tags_management'),
     
     # POST ENDPOINTS
     path('add_following/', post_views.add_following, name='add_following'),
@@ -29,4 +30,5 @@ urlpatterns = [
     path('get_user_username/<slug:username>', view_utils.get_user_username, name='get_user_username'),
     path('prepare_admin_manage_users/<slug:username>', view_utils.prepare_admin_manage_users, name='prepare_admin_manage_users'),
     path('add_remove_moderator/', view_utils.add_remove_moderator, name='add_remove_moderator'),
+    path('create_tag/', view_utils.create_tag, name='create_tag'),
 ]
