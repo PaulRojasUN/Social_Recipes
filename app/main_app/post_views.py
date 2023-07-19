@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from .models import FollowingUser, CustomUser, admin_access, priviliged_access, Tag, ClassifiedTag, UnclassifiedTag, TagUser
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import Group
 from django.db.models import Q
 
@@ -150,6 +150,7 @@ def set_classified_tag(request):
 
 ### Edit Account ###
 
+@login_required
 def edit_account_fields(request):
     if request.method == 'POST':
         try:
@@ -207,14 +208,14 @@ def edit_account_fields(request):
 
                 # Assign the new tags to the user's interest tags
                 for t in tags_list:
-                    if not TagUser.objects.filter(tag_id__name=t).exists():
+                    if not TagUser.objects.filter(Q(tag_id__name=t)&Q(user_id=user_to_update)).exists():
                         if Tag.objects.filter(name=t).filter():
                             tag = Tag.objects.get(name=t);
                             TagUser.objects.create(tag_id=tag, user_id=user_to_update);
                 
                 # Delete tags
                 for t in deleted_tags:
-                    tag = TagUser.objects.get(tag_id__name=t);
+                    tag = TagUser.objects.get(Q(tag_id__name=t)&Q(user_id=user_to_update));
                     tag.delete();
                 
                 user_to_update.save();

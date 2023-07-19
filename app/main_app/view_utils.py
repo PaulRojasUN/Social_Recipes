@@ -144,6 +144,7 @@ def get_tag_information(request, tag_name):
 
 ### Edit Account ###
 
+@login_required
 def get_interested_tags_user(request, username):
     if request.method == 'GET':
         try:
