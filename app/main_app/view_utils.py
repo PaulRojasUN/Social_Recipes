@@ -1,5 +1,5 @@
 from django.http import HttpResponse, JsonResponse
-from .models import FollowingUser, CustomUser, admin_access, Tag, priviliged_access
+from .models import FollowingUser, CustomUser, admin_access, Tag, ClassifiedTag, priviliged_access, UnclassifiedTag
 from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -170,7 +170,8 @@ def create_tag(request):
             if already_exists:
                 return HttpResponse('Another tag already has a similar name', status=461);
             else:
-                Tag.objects.create(name=tag_name);
+                tag = Tag.objects.create(name=tag_name);
+                ClassifiedTag.objects.create(tag_id=tag);
                 return HttpResponse('Tag was successfully created', status=200);
     
         except Exception:
@@ -178,6 +179,50 @@ def create_tag(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@user_passes_test(priviliged_access)
+def get_tag_information(request, tag_name):
+    if request.method == 'GET':
+        try:
+            tag = Tag.objects.get(name=tag_name);
 
+            classified = 1;
+            if ClassifiedTag.objects.filter(tag_id=tag).exists():
+                classified = 0;
 
+            obj = {
+                'name':tag.name,
+                'classified':classified,
+            }
+            
+            return JsonResponse(obj);
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@user_passes_test(priviliged_access)
+def set_classified_tag(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+
+            tag_name = obj['tag_name'];
+
+            tag = Tag.objects.get(name=tag_name);
+
+            is_unclassified = UnclassifiedTag.objects.filter(tag_id=tag).exists() and not ClassifiedTag.objects.filter(tag_id=tag).exists();
+
+            if  is_unclassified:
+                UnclassifiedTag.objects.get(tag_id=tag).delete();
+                ClassifiedTag.objects.create(tag_id=tag);
+
+                return HttpResponse('Tag set as classified', status=200);
+            else:
+                raise Exception('Sorry, that is not allowed');
+
+        except Exception:
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
 ########################

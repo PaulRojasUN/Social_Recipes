@@ -15,18 +15,22 @@
     <input id="input_search_tag" name="input_search_tag" type="text" autocomplete="off">
     
     <br>
+    
+    <button id="btn_search_tag">Search</button>
+    
+    <br>
 
     <label for="fixed_input_tag_name">Name</label>
-    <input name="fixed_input_tag_name" type="text" autocomplete="off" disabled>
+    <input id="fixed_input_tag_name" name="fixed_input_tag_name" type="text" autocomplete="off" disabled>
 
     <br>
 
-    <label for="approved_state">Approve State</label>
-    <input name="approved_state" type="text" autocomplete="off" disabled>
+    <label for="input_classified_state">Classified State</label>
+    <input id="input_classified_state" name="input_classified_state" type="text" autocomplete="off" disabled>
 
     <br>
 
-    <button>APPROVE</button>
+    <button id="btn_approve" disabled>Approve</button>
 </div>
 <script type="text/javascript" src="{% static 'js/main_app/tags_management.js' %}"></script>
 {% endblock %}

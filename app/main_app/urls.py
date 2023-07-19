@@ -24,6 +24,8 @@ urlpatterns = [
     # POST ENDPOINTS
     path('add_following/', post_views.add_following, name='add_following'),
 
+
+    
     # UTILS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),
     path('predict_username/<slug:username>', view_utils.predict_username, name='predict_username'),
@@ -31,4 +33,6 @@ urlpatterns = [
     path('prepare_admin_manage_users/<slug:username>', view_utils.prepare_admin_manage_users, name='prepare_admin_manage_users'),
     path('add_remove_moderator/', view_utils.add_remove_moderator, name='add_remove_moderator'),
     path('create_tag/', view_utils.create_tag, name='create_tag'),
+    path('get_tag_information/<slug:tag_name>', view_utils.get_tag_information, name='get_tag_information'),
+    path('set_classified_tag/', view_utils.set_classified_tag, name='set_classified_tag'),
 ]
