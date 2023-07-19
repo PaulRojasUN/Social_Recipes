@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div>
+    <h1>EDIT ACCOUNT</h1>
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input name="name" type="text" value={{name}} class="form-control">
+
+        <label for="username">Username</label>
+        <input id="target_username" name="username" type="text" value={{target_username}} class="form-control" disabled>
+
+        <label for="tags">Interest Tags</label>
+        <ul>
+            {% for tag in tags %}
+                <li>{{tag.tag_id__name}}</li>
+            {% endfor %}
+        </ul>
+        <br>
+
+        <div class="form">
+            <input id="input_follower" name="follower_user" type="hidden" value="{{ logged_username }}"">
+            <input id="input_target" name="target_user" type="hidden" value="{{ target_username }}"">
+        </div>
+        <br>
+        <button disabled>Save Changes</button>
+        <br>
+        <a href="{% url 'home' %}">Back</a>
+    </div>
+</div>
+{% endblock %}
