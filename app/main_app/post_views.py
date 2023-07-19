@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from .models import FollowingUser, CustomUser, admin_access, priviliged_access, Tag, ClassifiedTag, UnclassifiedTag
+from .models import FollowingUser, CustomUser, admin_access, priviliged_access, Tag, ClassifiedTag, UnclassifiedTag, TagUser
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
 from django.db.models import Q
@@ -177,11 +177,46 @@ def edit_account_fields(request):
             if (own_account or is_admin):
                 new_name = obj['name'];
 
+
+                # Update name
+
                 if new_name == '':
                     raise Exception('Bad Name');
         
                 user_to_update.first_name = new_name;
             
+                # Update tags
+
+                tags_string = obj['tags'];
+
+                tags_list_raw = tags_string.split(',');
+
+                tags_list = [];
+
+                for t in tags_list_raw:
+                    tags_list.append(t.lower());
+
+                current_tags = list(TagUser.objects.filter(user_id=user_to_update).values_list('tag_id__name', flat=True));
+
+                deleted_tags = [];
+
+                # Save in delete_tags the tags that have been deleted
+                for t in current_tags:
+                    if t not in tags_list:
+                        deleted_tags.append(t);
+
+                # Assign the new tags to the user's interest tags
+                for t in tags_list:
+                    if not TagUser.objects.filter(tag_id__name=t).exists():
+                        if Tag.objects.filter(name=t).filter():
+                            tag = Tag.objects.get(name=t);
+                            TagUser.objects.create(tag_id=tag, user_id=user_to_update);
+                
+                # Delete tags
+                for t in deleted_tags:
+                    tag = TagUser.objects.get(tag_id__name=t);
+                    tag.delete();
+                
                 user_to_update.save();
             
                 return HttpResponse('User data has been successfully updated', status=200); 

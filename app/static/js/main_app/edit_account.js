@@ -1,9 +1,27 @@
 function update_tags_list(){
     let tags = localStorage.getItem('tags').split(',');
     $('#ul_tags').html('');
-    tags.forEach(e => $('#ul_tags').append('<li>' + e + '</li>'));
+    if (tags[0] != "") {
+        tags.forEach(e => $('#ul_tags').append('<li>' + e + '<button id=\"'+ 'btn_li_' + e +'\">x</button></li>'));
+    }
+    
 }
 
+$('#ul_tags').on('click', 'button[id^="btn_li_"]', (event) =>  {
+
+    let clicked_button = event.target.id;
+
+    let tags = localStorage.getItem('tags').split(',');
+
+    let filtered_tags = tags.filter(e => "btn_li_" + e != clicked_button);
+    
+    localStorage.setItem('tags', filtered_tags);
+
+    update_tags_list();
+
+    $('#btn_save_changes').prop('disabled', false);
+
+  })
 
 $(function(){
 
@@ -14,13 +32,16 @@ $(function(){
         datatype:'json',
         type:'GET',
         success:function(data){            
-            localStorage.setItem('tags', data.toString());
+            localStorage.setItem('tags',data.toString());
             update_tags_list();
         },
         error:function(e){
             console.log(e);
         },
     }); 
+
+
+
 })
 
 $('#input_name').on('input', ()=>{
@@ -38,9 +59,22 @@ $('#btn_add_tag').on('click', ()=> {
 
     let tags_string = localStorage.getItem('tags');
     
-    localStorage.setItem('tags', tags_string + ',' + input_search_tag);
+    if (tags_string === ""){
+        localStorage.setItem('tags', input_search_tag);
+    } else {
+        localStorage.setItem('tags', tags_string + ',' + input_search_tag);
+    }
     
+
     update_tags_list();
+
+    $('#input_search_tag').val('');
+
+    $('#span_found_tag').html('');
+
+    $('#btn_add_tag').prop('disabled', true);
+
+    $('#btn_save_changes').prop('disabled', false);
 });
 
 $('#btn_search_tag').on('click',()=>{
@@ -84,10 +118,12 @@ $('#btn_save_changes').on('click', ()=> {
     
     let input_target_username = $('#input_target_username').val();
     let input_name = $('#input_name').val();
+    let tags = localStorage.getItem('tags');
 
     let data = {
         'username':input_target_username,
         'name':input_name,
+        'tags':tags,
     }
 
     if (input_name != ''){
@@ -110,6 +146,8 @@ $('#btn_save_changes').on('click', ()=> {
             },
         });
     }
+
+    $('#btn_save_changes').prop('disabled', true);
 });
 
 
