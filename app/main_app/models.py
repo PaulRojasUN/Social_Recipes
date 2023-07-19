@@ -118,7 +118,7 @@ def admin_access(user):
 ### Tag ###
 
 class Tag(models.Model):
-    name = models.CharField(max_length=64);
+    name = models.CharField(max_length=64, unique=True);
 
     def __str__(self):
         return self.name;
@@ -126,8 +126,14 @@ class Tag(models.Model):
 class ClassifiedTag(models.Model):
     tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);
 
+    def __str__(self):
+        return str(self.tag_id.name);
+
 class UnclassifiedTag(models.Model):
     tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);
+    
+    def __str__(self):
+        return str(self.tag_id.name);
 
 class TagIngredient(models.Model):
     tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);

@@ -66,10 +66,6 @@ def view_account(request, username):
             logged_user = request.user;
             target_user = CustomUser.objects.get(username=username);
             tags = TagUser.objects.filter(user_id__id=target_user.id).values('tag_id__name');
-            
-            print(target_user.username);
-            print(logged_user.username);
-
 
             context = {
                         'name':target_user.first_name,
@@ -86,7 +82,30 @@ def view_account(request, username):
 
 def edit_account(request, username):
     if request.method == 'GET':
-        return HttpResponse('edit account ' + str(username));
+        try:
+            logged_user = request.user;
+            target_user = CustomUser.objects.get(username=username);
+
+            own_account = logged_user.id == target_user.id;
+
+            is_admin = logged_user.groups.first().name=='admin';
+
+            if (own_account or is_admin):
+                tags = TagUser.objects.filter(user_id__id=target_user.id).values('tag_id__name');
+
+
+                context = {
+                            'name':target_user.first_name,
+                            'target_username':target_user.username,
+                            'tags':tags,
+                            };
+                return render(request, 'main_app/edit_account.html', context);
+        
+            else:
+                return HttpResponse('Sorry, you cannot access this site', status=403);
+        except Exception as e:
+            print(e);
+            return HttpResponse('User was not found', status=404)
     else:
         return HttpResponse('Unsupported method', status=405);
 
@@ -151,6 +170,13 @@ def admin_manage_users(request):
     if request.method == 'GET':
         return render(request, 'main_app/admin_manage_users.html');
     else:   
+        return HttpResponse('Unsupported method', status=405);
+
+@user_passes_test(priviliged_access)
+def tags_management(request):
+    if request.method == 'GET':
+        return render(request, 'main_app/tags_management.html');
+    else:
         return HttpResponse('Unsupported method', status=405);
 
 ### ////////////////// ###

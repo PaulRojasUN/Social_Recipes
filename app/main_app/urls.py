@@ -19,14 +19,20 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('tags_manager/', views.tags_manager, name='tags_manager'),
     path('admin_manage_users/', views.admin_manage_users, name='admin_manage_users'),
+    path('tags_management/', views.tags_management, name='tags_management'),
     
     # POST ENDPOINTS
     path('add_following/', post_views.add_following, name='add_following'),
-
-    # UTILS
+    path('add_remove_moderator/', post_views.add_remove_moderator, name='add_remove_moderator'),
+    path('create_tag/', post_views.create_tag, name='create_tag'),
+    path('set_classified_tag/', post_views.set_classified_tag, name='set_classified_tag'),
+    path('edit_account_fields/', post_views.edit_account_fields, name='edit_account_fields'),
+    
+    # UTILS ENDPOINTS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),
     path('predict_username/<slug:username>', view_utils.predict_username, name='predict_username'),
     path('get_user_username/<slug:username>', view_utils.get_user_username, name='get_user_username'),
     path('prepare_admin_manage_users/<slug:username>', view_utils.prepare_admin_manage_users, name='prepare_admin_manage_users'),
-    path('add_remove_moderator/', view_utils.add_remove_moderator, name='add_remove_moderator'),
+    path('get_tag_information/<slug:tag_name>', view_utils.get_tag_information, name='get_tag_information'),
+    path('get_interested_tags_user/<slug:username>', view_utils.get_interested_tags_user, name='get_interested_tags_user'),
 ]

@@ -1,7 +1,6 @@
 from django.http import HttpResponse, JsonResponse
-from .models import FollowingUser, CustomUser, admin_access
+from .models import FollowingUser, CustomUser, admin_access, Tag, ClassifiedTag, priviliged_access, TagUser
 from django.db.models import Q
-from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 ### View Account ###
@@ -105,47 +104,60 @@ def prepare_admin_manage_users(request, username):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-@user_passes_test(admin_access)
-def add_remove_moderator(request):
-    if request.method == 'POST':
-        try:
-            obj = request.POST;
-
-            print(obj)
-
-            username = obj['username'];
-
-            user = CustomUser.objects.get(username=username);
-        
-            group = user.groups.first();
-
-            if group is not None:
-
-                group_name = group.name;
-                
-                user.groups.remove(group);
-        
-                new_group_name = "";
-
-                if group_name=='regular_users':
-                    new_group_name = 'moderators'
-                else:
-                    new_group_name = 'regular_users'
-                
-                new_group = Group.objects.get(name=new_group_name);
-        
-                user.groups.add(new_group);
-        
-                if new_group_name == 'moderators':
-                    return HttpResponse('The user has been added to moderators group', status=250);
-                else:
-                    return HttpResponse('The user has been added to regulars users group', status=251);
-            else:
-                raise Exception("User not belonging to any group");
-        except Exception:
-            return HttpResponse('Bad Request', status=400);    
-    else:
-        return HttpResponse('Unsupported method', status=405);
 
 
 ### //////////////////////////////////////////// ####
+
+
+
+### Tags Management ###
+
+
+
+@user_passes_test(priviliged_access)
+def get_tag_information(request, tag_name):
+    if request.method == 'GET':
+        try:
+
+            lower_tag_name = tag_name.lower();
+
+            tag = Tag.objects.get(name=lower_tag_name);
+
+            classified = 1;
+            if ClassifiedTag.objects.filter(tag_id=tag).exists():
+                classified = 0;
+
+            obj = {
+                'name':tag.name,
+                'classified':classified,
+            }
+            
+            return JsonResponse(obj);
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+########################
+
+
+### Edit Account ###
+
+@login_required
+def get_interested_tags_user(request, username):
+    if request.method == 'GET':
+        try:
+            user = CustomUser.objects.get(username=username);
+
+            tags = list(TagUser.objects.filter(user_id=user.id).values_list('tag_id__name', flat=True));
+    
+            return JsonResponse(tags, safe=False);
+
+        except Exception as e:
+            print(e)
+            return HttpResponse('Bad Response', status=400);    
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+### /////////// ###
