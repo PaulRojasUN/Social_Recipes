@@ -146,3 +146,54 @@ def set_classified_tag(request):
         return HttpResponse('Unsupported method', status=405);
 
 ### /////////////// ###
+
+
+### Edit Account ###
+
+def edit_account_fields(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+        
+            target_username = obj['username'];
+
+            requester_user = request.user;
+        
+            own_account = target_username == requester_user.username;
+        
+            is_admin = False;
+
+            user_to_update = requester_user;
+
+
+            if not own_account:
+                if requester_user.groups.first().name == 'admin':
+                    is_admin = True;
+                    if CustomUser.objects.filter(username=target_username).exists():
+                       user_to_update = CustomUser.objects.get(username=target_username);
+                    else:
+                        raise Exception('User not found');
+        
+            if (own_account or is_admin):
+                new_name = obj['name'];
+
+                if new_name == '':
+                    raise Exception('Bad Name');
+        
+                user_to_update.first_name = new_name;
+            
+                user_to_update.save();
+            
+                return HttpResponse('User data has been successfully updated', status=200); 
+
+            else:
+                return HttpResponse('Forbidden', status=403);    
+
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Request', status=400);    
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+### /////////// ###
+

@@ -13,9 +13,12 @@
         <label for="tags">Interest Tags</label>
         <ul>
             {% for tag in tags %}
-                <li>{{tag.tag_id__name}}</li>
+                    <li>{{tag.tag_id__name}}</li>
+                {% empty %}
+                    <li>The user doesn't have preferred tags</li>
             {% endfor %}
         </ul>
+        
         <a href="{% url 'social' target_username %}">Social</a>
         <br>
         <a href="{% url 'filter' %}?user={{ target_username }}">User's Posts</a>

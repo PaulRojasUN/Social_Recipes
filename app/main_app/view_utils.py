@@ -1,7 +1,6 @@
 from django.http import HttpResponse, JsonResponse
-from .models import FollowingUser, CustomUser, admin_access, Tag, ClassifiedTag, priviliged_access, UnclassifiedTag
+from .models import FollowingUser, CustomUser, admin_access, Tag, ClassifiedTag, priviliged_access, TagUser
 from django.db.models import Q
-from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 ### View Account ###
@@ -119,7 +118,10 @@ def prepare_admin_manage_users(request, username):
 def get_tag_information(request, tag_name):
     if request.method == 'GET':
         try:
-            tag = Tag.objects.get(name=tag_name);
+
+            lower_tag_name = tag_name.lower();
+
+            tag = Tag.objects.get(name=lower_tag_name);
 
             classified = 1;
             if ClassifiedTag.objects.filter(tag_id=tag).exists():
@@ -138,3 +140,23 @@ def get_tag_information(request, tag_name):
         return HttpResponse('Unsupported method', status=405);
 
 ########################
+
+
+### Edit Account ###
+
+def get_interested_tags_user(request, username):
+    if request.method == 'GET':
+        try:
+            user = CustomUser.objects.get(username=username);
+
+            tags = list(TagUser.objects.filter(user_id=user.id).values_list('tag_id__name', flat=True));
+    
+            return JsonResponse(tags, safe=False);
+
+        except Exception as e:
+            print(e)
+            return HttpResponse('Bad Response', status=400);    
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+### /////////// ###

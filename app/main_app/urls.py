@@ -26,6 +26,7 @@ urlpatterns = [
     path('add_remove_moderator/', post_views.add_remove_moderator, name='add_remove_moderator'),
     path('create_tag/', post_views.create_tag, name='create_tag'),
     path('set_classified_tag/', post_views.set_classified_tag, name='set_classified_tag'),
+    path('edit_account_fields/', post_views.edit_account_fields, name='edit_account_fields'),
     
     # UTILS ENDPOINTS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),
@@ -33,4 +34,5 @@ urlpatterns = [
     path('get_user_username/<slug:username>', view_utils.get_user_username, name='get_user_username'),
     path('prepare_admin_manage_users/<slug:username>', view_utils.prepare_admin_manage_users, name='prepare_admin_manage_users'),
     path('get_tag_information/<slug:tag_name>', view_utils.get_tag_information, name='get_tag_information'),
+    path('get_interested_tags_user/<slug:username>', view_utils.get_interested_tags_user, name='get_interested_tags_user'),
 ]

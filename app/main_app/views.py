@@ -66,10 +66,6 @@ def view_account(request, username):
             logged_user = request.user;
             target_user = CustomUser.objects.get(username=username);
             tags = TagUser.objects.filter(user_id__id=target_user.id).values('tag_id__name');
-            
-            print(target_user.username);
-            print(logged_user.username);
-
 
             context = {
                         'name':target_user.first_name,
@@ -101,7 +97,6 @@ def edit_account(request, username):
                 context = {
                             'name':target_user.first_name,
                             'target_username':target_user.username,
-                            'logged_username':logged_user.username,
                             'tags':tags,
                             };
                 return render(request, 'main_app/edit_account.html', context);

@@ -4,28 +4,33 @@
 <div>
     <h1>EDIT ACCOUNT</h1>
     <div class="form-group">
-        <label for="name">Name</label>
-        <input name="name" type="text" value={{name}} class="form-control">
+        <label for="input_name">Name</label>
+        <input id="input_name" name="input_name" type="text" value={{name}} autocomplete="off" class="form-control">
 
         <label for="username">Username</label>
         <input id="target_username" name="username" type="text" value={{target_username}} class="form-control" disabled>
 
-        <label for="tags">Interest Tags</label>
-        <ul>
-            {% for tag in tags %}
-                <li>{{tag.tag_id__name}}</li>
-            {% endfor %}
-        </ul>
-        <br>
 
-        <div class="form">
-            <input id="input_follower" name="follower_user" type="hidden" value="{{ logged_username }}"">
-            <input id="input_target" name="target_user" type="hidden" value="{{ target_username }}"">
-        </div>
+        <label for="tags">Interest Tags</label>
+        <ul id="ul_tags">
+        </ul>
+
+        <br><hr><br>
+
+        <label for="input_search_tag">Search Tag</label>
+        <input id="input_search_tag" name="input_search_tag" type="text" autocomplete="off">
+        <button id="btn_search_tag">Search</button>
+        <span id="span_found_tag"></span>
         <br>
-        <button disabled>Save Changes</button>
+        <button id="btn_add_tag" disabled>Add Tag</button>
+
+        <input id="input_target_username" type="hidden" value="{{ target_username }}"">
+
+        <br><br>
+        <button id="btn_save_changes" autocomplete="off" disabled>Save Changes</button>
         <br>
         <a href="{% url 'home' %}">Back</a>
     </div>
 </div>
+<script src="{% static 'js/main_app/edit_account.js' %}"></script>
 {% endblock %}
