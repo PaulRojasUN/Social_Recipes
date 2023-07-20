@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser, TagUser, FollowingUser, priviliged_access
+from .models import CustomUser, TagUser, FollowingUser, priviliged_access, admin_access
 ###
 from django.http import HttpResponse
 from main_app.forms import CustomUserCreationForm
@@ -165,7 +165,7 @@ def tags_manager(request):
         return HttpResponse('Unsupported method', status=405);
 
 
-@user_passes_test(priviliged_access)
+@user_passes_test(admin_access)
 def admin_manage_users(request):
     if request.method == 'GET':
         return render(request, 'main_app/admin_manage_users.html');
@@ -176,6 +176,13 @@ def admin_manage_users(request):
 def tags_management(request):
     if request.method == 'GET':
         return render(request, 'main_app/tags_management.html');
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@user_passes_test(priviliged_access)
+def ingredients_management(request):
+    if request.method == 'GET':
+        return render(request, 'main_app/ingredients_management.html');
     else:
         return HttpResponse('Unsupported method', status=405);
 

@@ -25,6 +25,8 @@ $(function () {
 
         let username_parameter = $('#input_username').val();
 
+        console.log("HOla")
+
         if (username_parameter != ''){
           $.ajax({
             url: '/get_user_username/' + username_parameter,

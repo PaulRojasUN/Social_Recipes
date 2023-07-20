@@ -98,7 +98,7 @@ def admin_access(user):
     try:
         if (user.is_authenticated):
 
-            group_name = user.groups.first();
+            group_name = user.groups.first().name;
 
             if group_name == 'admin':
                 return True;
@@ -162,11 +162,20 @@ class TagUser(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(max_length=64);
 
+    def __str__(self):
+        return self.name;
+
 class ClassifiedIngredient(models.Model):
     ingredient_id = models.ForeignKey('Ingredient', on_delete=models.CASCADE);
 
+    def __str__(self):
+        return str(self.ingredient_id.name);
+
 class UnclassifiedIngredient(models.Model):
     ingredient_id = models.ForeignKey('Ingredient', on_delete=models.CASCADE);
+
+    def __str__(self):
+        return str(self.ingredient_id.name);
 
 ### ////////////// ###
 

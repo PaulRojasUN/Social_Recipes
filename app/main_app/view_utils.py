@@ -1,7 +1,20 @@
 from django.http import HttpResponse, JsonResponse
-from .models import FollowingUser, CustomUser, admin_access, Tag, ClassifiedTag, priviliged_access, TagUser
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required, user_passes_test
+
+# User imports
+from .models import FollowingUser, CustomUser
+
+# Tags imports 
+from .models import Tag, ClassifiedTag, TagUser
+
+# Access import
+from .models import priviliged_access, admin_access
+
+# Ingredients import
+from .models import Ingredient, ClassifiedIngredient
+
+
 
 ### View Account ###
 
@@ -139,7 +152,7 @@ def get_tag_information(request, tag_name):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-########################
+### ///////////////////// ###
 
 
 ### Edit Account ###
@@ -161,3 +174,33 @@ def get_interested_tags_user(request, username):
         return HttpResponse('Unsupported method', status=405);
 
 ### /////////// ###
+
+
+### get_ingredient_information ###
+
+@user_passes_test(priviliged_access)
+def get_ingredient_information(request, ingredient_name):
+    if request.method == 'GET':
+        try:
+
+            lower_ingredient_name = ingredient_name.lower();
+
+            ingredient = Ingredient.objects.get(name=lower_ingredient_name);
+
+            classified = 1;
+            if ClassifiedIngredient.objects.filter(ingredient_id=ingredient).exists():
+                classified = 0;
+
+            obj = {
+                'name':ingredient.name,
+                'classified':classified,
+            }
+            
+            return JsonResponse(obj);
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+### //////////////////////// ###

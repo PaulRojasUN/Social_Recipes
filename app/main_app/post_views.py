@@ -1,9 +1,20 @@
 from django.http import HttpResponse
-from .models import FollowingUser, CustomUser, admin_access, priviliged_access, Tag, ClassifiedTag, UnclassifiedTag, TagUser
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import Group
 from django.db.models import Q
 
+# User 
+from .models import FollowingUser, CustomUser
+
+# Tags
+from .models import Tag, ClassifiedTag, UnclassifiedTag, TagUser
+
+# Access
+from .models import priviliged_access, admin_access 
+
+# Ingredients
+
+from .models import Ingredient, ClassifiedIngredient, UnclassifiedIngredient
 
 ### Social ###
 def add_following(request):
@@ -233,3 +244,60 @@ def edit_account_fields(request):
 
 ### /////////// ###
 
+
+
+### Ingredients Management ###
+@user_passes_test(priviliged_access)
+def create_ingredient(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+
+            ingredient_name = obj['ingredient_name'].lower();
+        
+            if not ingredient_name:
+                return HttpResponse('Not proper name given', status=460);
+
+            already_exists = Ingredient.objects.filter(name=ingredient_name).exists();
+        
+            if already_exists:
+                return HttpResponse('Another ingredient already has a similar name', status=461);
+            else:
+                ingredient = Ingredient.objects.create(name=ingredient_name);
+                ClassifiedIngredient.objects.create(ingredient_id=ingredient);
+                return HttpResponse('Ingredient was successfully created', status=200);
+    
+        except Exception:
+            return HttpResponse('Bad request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@user_passes_test(priviliged_access)
+def set_classified_ingredient(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+
+            ingredient_name = obj['ingredient_name'];
+
+            ingredient = Ingredient.objects.get(name=ingredient_name);
+
+            in_unclassified_ingredients = UnclassifiedIngredient.objects.filter(ingredient_id=ingredient).exists();
+            
+            in_classified_ingredients = ClassifiedIngredient.objects.filter(ingredient_id=ingredient).exists();
+
+            if  in_unclassified_ingredients and not in_classified_ingredients:
+                UnclassifiedIngredient.objects.get(ingredient_id=ingredient).delete();
+                ClassifiedIngredient.objects.create(ingredient_id=ingredient);
+
+                return HttpResponse('Ingredient set as classified', status=200);
+            else:
+                raise Exception('Sorry, that is not allowed');
+
+        except Exception:
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+
+### ///////////////////// ###
