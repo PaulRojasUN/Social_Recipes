@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1> CREATE POST</h1>
+<label for="input_recipe_name">Name</label>
+<input id="input_recipe_name" name="input_recipe_name" type="text">
+<br><br>
+<label for="ul_ingredients">Ingredients</label>
+<button id="btn_add_ingredient">Add Ingredient</button>
+<br>
+<ul id="ul_ingredients">
+</ul>
+<br><br>
+<label for="input_tags">tags</label>
+<button id="btn_add_tag">Add tag</button>
+<br>    
+<ul id="ul_tags">
+</ul>
+<br><br>
+<label for="select_visibility"></label>
+<select name="select_visibility" id="select_visibility">
+    <option value="public">Public</option>
+    <option value="followers_only">Followers Only</option>
+    <option value="private">Private</option>
+</select>
+<br><br>
+<label for="textarea_instructions">Instructions</label>
+<br>
+<textarea name="textarea_instructions" id="textarea_instructions" cols="30" rows="10"></textarea>
+
+
+<!--Ingredients Modal-->
+  <div id="modal_ingredients" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add Ingredients</h4>
+        </div>
+        <div class="modal-body">
+          <label for="input_modal_add_ingredient">Search Ingredient</label>
+          <input id="input_modal_add_ingredient" name="input_modal_add_ingredient" type="text" autocomplete="off">
+          <button id="btn_modal_search_ingredient">Search</button>
+          <br>
+          <button id="btn_modal_add_ingredient" autocomplete="off" disabled>Add Ingredient</button>
+          <span id="span_modal_add_ingredient"></span>
+          <hr>
+          <label for="input_modal_create_ingredient">Create New Ingredient</label>
+          <input id="input_modal_create_ingredient" name="input_modal_create_ingredient" type="text">
+          <br>
+          <button id="btn_modal_create_ingredient">Create Ingredient</button>
+        </div>
+        <div class="modal-footer">
+
+          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--Tags Modal-->
+  <div id="modal_tags" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add Tags</h4>
+        </div>
+        <div class="modal-body">
+          <label for="input_modal_add_tag">Search Tag</label>
+          <input id="input_modal_add_tag" name="input_modal_add_tag" type="text" autocomplete="off">
+          <button id="btn_modal_search_tag">Search</button>
+          <br>
+          <button id="btn_modal_add_tag" autocomplete="off" disabled>Add Tag</button>
+          <span id="span_modal_add_tag"></span>
+          <hr>
+          <label for="input_modal_create_tag">Create New Tag</label>
+          <input id="input_modal_create_tag" name="input_modal_create_tag" type="text">
+          <br>
+          <button id="btn_modal_create_tag">Create Tag</button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="{% static 'js/main_app/create_post.js' %}"></script>
+
+{% endblock%}

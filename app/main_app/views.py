@@ -41,7 +41,7 @@ def home(request):
 @login_required
 def create_post(request):
     if request.method == 'GET':
-        return HttpResponse('create_post');
+        return render(request, 'main_app/create_post.html');
     else:
         return HttpResponse('Unsupported method', status=405);
 
