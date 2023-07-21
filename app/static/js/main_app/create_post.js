@@ -26,6 +26,18 @@ function update_tags_list(){
 }
 
 
+// Add item to list in localstorage
+function add_item_localstorage(list_name, item){
+    let list_string = localStorage.getItem(list_name);
+
+    if (!list_string == ''){
+        localStorage.setItem(list_name, list_string+ ',' + item);
+    } else {
+        localStorage.setItem(list_name, item);
+    }
+
+}
+
 
 // Input Events
 $('#input_modal_add_ingredient').on('input', ()=>{
@@ -49,35 +61,37 @@ $('#btn_add_ingredient').on('click', function() {
 
 $('#btn_modal_search_ingredient').on('click', ()=>{
     
-    let  input_modal_add_ingredient = $('#input_modal_add_ingredient').val();
+    let input_modal_add_ingredient = $('#input_modal_add_ingredient').val().toLowerCase();
 
-    $.ajax({
-        url:'/get_ingredient_information/'+input_modal_add_ingredient,
-        datatype:'json',
-        type:'GET',
-        success:function(data){
-            $('#btn_modal_add_ingredient').prop('disabled', false);
-            $('#span_modal_add_ingredient').html('Ingredient was found');
-        },
-        error:function(e){
-            $('#span_modal_add_ingredient').html('Ingredient was not found');
-            console.error(e);
-        },
-    });
+    let ingredients = localStorage.getItem('ingredients');
+    
+    if (!ingredients.includes(input_modal_add_ingredient)){
+        $.ajax({
+            url:'/get_ingredient_information/'+input_modal_add_ingredient,
+            datatype:'json',
+            type:'GET',
+            success:function(data){
+                $('#btn_modal_add_ingredient').prop('disabled', false);
+                $('#span_modal_add_ingredient').html('Ingredient was found');
+            },
+            error:function(e){
+                $('#span_modal_add_ingredient').html('Ingredient was not found');
+                console.error(e);
+            },
+        });
+    } else {
+        $('#span_modal_add_ingredient').html('You already have that ingredient');
+    }
+
     
 });
 
 $('#btn_modal_add_ingredient').on('click', ()=>{
-    let  input_modal_add_ingredient = $('#input_modal_add_ingredient').val();
+    let  input_modal_add_ingredient = $('#input_modal_add_ingredient').val().toLowerCase();
     
     if (input_modal_add_ingredient != ''){
-        let ingredients_string = localStorage.getItem('ingredients');
-
-        if (!ingredients_string == ''){
-            localStorage.setItem('ingredients', ingredients_string+ ',' + input_modal_add_ingredient);
-        } else {
-            localStorage.setItem('ingredients', input_modal_add_ingredient);
-        }
+        console.log(input_modal_add_ingredient)
+        add_item_localstorage('ingredients', input_modal_add_ingredient);
 
         update_ingredients_list();
     }
@@ -103,6 +117,44 @@ $('#ul_ingredients').on('click', 'button[id^="btn_li_ing_"]', (event) =>  {
 
   });
 
+$('#btn_modal_create_ingredient').on('click', ()=>{
+
+    let input_modal_create_ingredient = $('#input_modal_create_ingredient').val().toLowerCase();
+
+    if (input_modal_create_ingredient != ''){
+        let data = {
+            'ingredient_name':input_modal_create_ingredient,
+        };
+    
+        $.ajax({
+            url:'/propose_new_ingredient/',
+            datatype:'text',
+            type:'POST',
+            data:data,
+            success:function(data, status, xhr){
+                add_item_localstorage('ingredients', input_modal_create_ingredient);
+                update_ingredients_list();
+                $('#input_modal_create_ingredient').val('');
+                $('#span_modal_create_ingredient').html('Ingredient has been successfully created and added');
+                
+            },
+            error:function(e){
+                let status_code = e.status;
+                if (status_code === 461){                    
+                    $('#span_modal_create_ingredient').html('That ingredient already exists');
+                } else {
+                    $('#span_modal_create_ingredient').html('Something went wrong');
+                    $('#input_modal_create_ingredient').val('');
+                }
+            },
+        });
+    } else {
+        $('#span_modal_create_ingredient').html('Please, enter a valid name');
+    }
+    
+
+});
+
 
 
 // Tags
@@ -113,43 +165,47 @@ $('#btn_add_tag').on('click', function() {
 
 $('#btn_modal_search_tag').on('click', ()=>{
     
-    let  input_modal_add_tag = $('#input_modal_add_tag').val();
+    let  input_modal_add_tag = $('#input_modal_add_tag').val().toLowerCase();;
 
-    $.ajax({
-        url:'/get_tag_information/'+input_modal_add_tag,
-        datatype:'json',
-        type:'GET',
-        success:function(data){
-            $('#btn_modal_add_tag').prop('disabled', false);
-            $('#span_modal_add_tag').html('tag was found');
-        },
-        error:function(e){
-            $('#span_modal_add_tag').html('tag was not found');
-            console.error(e);
-        },
-    });
-    
+    let tags = localStorage.getItem('tags').split(',');
+
+    if (!tags.includes(input_modal_add_tag)){
+        $.ajax({
+            url:'/get_tag_information/'+input_modal_add_tag,
+            datatype:'json',
+            type:'GET',
+            success:function(data){
+                $('#btn_modal_add_tag').prop('disabled', false);
+                $('#span_modal_add_tag').html('tag was found');
+            },
+            error:function(e){
+                $('#span_modal_add_tag').html('tag was not found');
+                console.error(e);
+            },
+        });
+    } else {
+        $('#span_modal_add_tag').html('You already have that tag');
+    }
+
 });
 
 $('#btn_modal_add_tag').on('click', ()=>{
-    let  input_modal_add_tag = $('#input_modal_add_tag').val();
+    let  input_modal_add_tag = $('#input_modal_add_tag').val().toLowerCase();;
     
-    if (input_modal_add_tag != ''){
-        let tags_string = localStorage.getItem('tags');
+    if (input_modal_add_tag != ''){ 
 
-        if (!tags_string == ''){
-            localStorage.setItem('tags', tags_string+ ',' + input_modal_add_tag);
-        } else {
-            localStorage.setItem('tags', input_modal_add_tag);
-        }
+            add_item_localstorage('tags', input_modal_add_tag);
 
-        update_tags_list();
+            update_tags_list();
+
+            $('#btn_modal_add_tag').prop('disabled', true);
+            $('#span_modal_add_tag').html('');
+            $('#input_modal_add_tag').val('');
+
+
     }
 
-    $('#btn_modal_add_tag').prop('disabled', true);
-    $('#span_modal_add_tag').html('');
-    $('#input_modal_add_tag').val('');
-
+    
 });
 
 // Add click event to each li in ul_tags component
@@ -166,3 +222,74 @@ localStorage.setItem('tags', filtered_tags);
 update_tags_list();
 
 });
+
+$('#btn_modal_create_tag').on('click', ()=>{
+
+    let input_modal_create_tag = $('#input_modal_create_tag').val();
+
+    if (input_modal_create_tag != ''){
+        let data = {
+            'tag_name':input_modal_create_tag,
+        };
+    
+        $.ajax({
+            url:'/propose_new_tag/',
+            datatype:'text',
+            type:'POST',
+            data:data,
+            success:function(data, status, xhr){
+                add_item_localstorage('tags', input_modal_create_tag);
+                update_tags_list();
+                $('#span_modal_create_tag').html('Tag has been successfully created and added');
+                $('#input_modal_create_tag').val('');
+            },
+            error:function(e){
+                let status_code = e.status;
+                if (status_code === 461){                    
+                    $('#span_modal_create_tag').html('That tag already exists');
+                } else {
+                    $('#span_modal_create_tag').html('Something went wrong');
+                    $('#input_modal_create_tag').val('');
+                }
+            },
+        });
+    } else {
+        $('#span_modal_create_tag').html('Please, enter a valid name');
+    }
+    
+
+});
+
+
+
+// Cookies
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = jQuery.trim(cookies[i]);
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  
+  const csrftoken = getCookie('csrftoken');
+  
+  
+  function csrfSafeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+  
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });

@@ -30,6 +30,8 @@ urlpatterns = [
     path('edit_account_fields/', post_views.edit_account_fields, name='edit_account_fields'),
     path('create_ingredient/', post_views.create_ingredient, name='create_ingredient'),
     path('set_classified_ingredient/', post_views.set_classified_ingredient, name='set_classified_ingredient'),
+    path('propose_new_ingredient/', post_views.propose_new_ingredient, name='propose_new_ingredient'),
+    path('propose_new_tag/', post_views.propose_new_tag, name='propose_new_tag'),
 
     # UTILS ENDPOINTS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),

@@ -301,3 +301,53 @@ def set_classified_ingredient(request):
 
 
 ### ///////////////////// ###
+
+
+### Create Post ###
+
+def propose_new_ingredient(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+        
+            ingredient_name = obj['ingredient_name'].lower();
+        
+            already_exists = Ingredient.objects.filter(name=ingredient_name).exists();
+        
+            if already_exists:
+                return HttpResponse('Ingredient already exists', status=461);
+
+            ingredient = Ingredient.objects.create(name=ingredient_name);
+
+            UnclassifiedIngredient.objects.create(ingredient_id=ingredient);
+
+            return HttpResponse('Ingredient created successfully', status=200);
+        except Exception:
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+def propose_new_tag(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+        
+            tag_name = obj['tag_name'].lower();
+        
+            already_exists = Tag.objects.filter(name=tag_name).exists();
+        
+            if already_exists:
+                return HttpResponse('tag already exists', status=461);
+
+            tag = Tag.objects.create(name=tag_name);
+
+            UnclassifiedTag.objects.create(tag_id=tag);
+
+            return HttpResponse('Tag created successfully', status=200);
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+### /////////// ###
