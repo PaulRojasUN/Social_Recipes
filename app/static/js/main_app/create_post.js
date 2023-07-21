@@ -63,25 +63,31 @@ $('#btn_modal_search_ingredient').on('click', ()=>{
     
     let input_modal_add_ingredient = $('#input_modal_add_ingredient').val().toLowerCase();
 
-    let ingredients = localStorage.getItem('ingredients');
+    let ingredients = localStorage.getItem('ingredients').split(',');
     
-    if (!ingredients.includes(input_modal_add_ingredient)){
-        $.ajax({
-            url:'/get_ingredient_information/'+input_modal_add_ingredient,
-            datatype:'json',
-            type:'GET',
-            success:function(data){
-                $('#btn_modal_add_ingredient').prop('disabled', false);
-                $('#span_modal_add_ingredient').html('Ingredient was found');
-            },
-            error:function(e){
-                $('#span_modal_add_ingredient').html('Ingredient was not found');
-                console.error(e);
-            },
-        });
+    if (input_modal_add_ingredient != ''){
+        if (!ingredients.includes(input_modal_add_ingredient)){
+            $.ajax({
+                url:'/get_ingredient_information/'+input_modal_add_ingredient,
+                datatype:'json',
+                type:'GET',
+                success:function(data){
+                    $('#btn_modal_add_ingredient').prop('disabled', false);
+                    $('#span_modal_add_ingredient').html('Ingredient was found');
+                },
+                error:function(e){
+                    $('#span_modal_add_ingredient').html('Ingredient was not found');
+                    console.error(e);
+                },
+            });
+        } else {
+            $('#span_modal_add_ingredient').html('You already have that ingredient');
+        }
     } else {
-        $('#span_modal_add_ingredient').html('You already have that ingredient');
+        $('#span_modal_add_ingredient').html('Please, enter a valid name');
     }
+    
+    
 
     
 });
@@ -165,27 +171,32 @@ $('#btn_add_tag').on('click', function() {
 
 $('#btn_modal_search_tag').on('click', ()=>{
     
-    let  input_modal_add_tag = $('#input_modal_add_tag').val().toLowerCase();;
+    let input_modal_add_tag = $('#input_modal_add_tag').val().toLowerCase();;
 
     let tags = localStorage.getItem('tags').split(',');
 
-    if (!tags.includes(input_modal_add_tag)){
-        $.ajax({
-            url:'/get_tag_information/'+input_modal_add_tag,
-            datatype:'json',
-            type:'GET',
-            success:function(data){
-                $('#btn_modal_add_tag').prop('disabled', false);
-                $('#span_modal_add_tag').html('tag was found');
-            },
-            error:function(e){
-                $('#span_modal_add_tag').html('tag was not found');
-                console.error(e);
-            },
-        });
+    if (input_modal_add_tag != ''){
+        if (!tags.includes(input_modal_add_tag)){
+            $.ajax({
+                url:'/get_tag_information/'+input_modal_add_tag,
+                datatype:'json',
+                type:'GET',
+                success:function(data){
+                    $('#btn_modal_add_tag').prop('disabled', false);
+                    $('#span_modal_add_tag').html('tag was found');
+                },
+                error:function(e){
+                    $('#span_modal_add_tag').html('tag was not found');
+                    console.error(e);
+                },
+            });
+        } else {
+            $('#span_modal_add_tag').html('You already have that tag');
+        }
     } else {
-        $('#span_modal_add_tag').html('You already have that tag');
+        $('#span_modal_add_tag').html('Please, enter a valid name');
     }
+    
 
 });
 
@@ -261,6 +272,54 @@ $('#btn_modal_create_tag').on('click', ()=>{
 });
 
 
+$('#btn_create_post').on('click', ()=> {
+  
+    let input_recipe_name = $('#input_recipe_name').val();
+  
+    let ingredients_list = localStorage.getItem('ingredients');
+  
+    let tags_list = localStorage.getItem('tags');
+  
+    let visibility = $('#select_visibility').val();
+    
+    let textarea_instructions = $('#textarea_instructions').val();
+  
+    let data = {
+      'recipe_name':input_recipe_name, 
+      'ingredients':ingredients_list,
+      'tags':tags_list,
+      'visibility':visibility,
+      'instructions':textarea_instructions,
+    };
+  
+    $.ajax({
+        url:'/create_new_post/',
+        datatype:'text',
+        type:'POST',
+        data:data,
+        success:function(data){
+            console.log('Post has been successfully created');
+        },
+        error:function(e){
+            console.log(e);
+        },
+    });
+
+    $('#input_recipe_name').val('');
+
+    localStorage.setItem('ingredients', '');
+
+    localStorage.setItem('tags', '');
+
+    $('#select_visibility').val('public');
+
+    $('#textarea_instructions').val('');
+
+    update_ingredients_list();
+
+    update_tags_list();
+
+});
 
 // Cookies
 

@@ -7,7 +7,7 @@ from django.db.models import Q
 from .models import FollowingUser, CustomUser
 
 # Tags
-from .models import Tag, ClassifiedTag, UnclassifiedTag, TagUser
+from .models import Tag, ClassifiedTag, UnclassifiedTag, TagUser, TagPost
 
 # Access
 from .models import priviliged_access, admin_access 
@@ -15,6 +15,10 @@ from .models import priviliged_access, admin_access
 # Ingredients
 
 from .models import Ingredient, ClassifiedIngredient, UnclassifiedIngredient
+
+# Posts
+from .models import Post, PostIngredients, PostLike
+
 
 ### Social ###
 def add_following(request):
@@ -350,4 +354,83 @@ def propose_new_tag(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+
+def create_new_post(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+
+            ## POST
+
+            post = Post();
+        
+            # Author User
+
+            user = request.user;
+        
+            post.author_user_id = user;
+        
+            # Recipe Name
+
+            post.recipe_name = obj['recipe_name'];
+        
+            # Body (Instructions)
+
+            post.body_text = obj['instructions'];
+        
+            # Visibility
+
+            raw_visibility = obj['visibility'];
+        
+            visibility = -1;
+
+            if (raw_visibility == 'public'):
+                visibility = 0;
+            elif (raw_visibility == 'followers_only'):
+                visibility = 1;
+            elif (raw_visibility == 'private'):
+                visibility = 2;
+            else:
+                raise Exception('Invalid visibility value');
+    
+            post.visibility = visibility;
+
+            post.save();
+
+            ## POST INGREDIENTES
+            ingredients = obj['ingredients'].split(',');
+        
+            if not ingredients[0] == '':
+                for i in ingredients:
+                    ingredient_exists = Ingredient.objects.filter(name=i).exists()
+                    if ingredient_exists:
+                        ingredient = Ingredient.objects.get(name=i);
+                        PostIngredients.objects.create(ingredient_id=ingredient, post_id=post);
+                    else:
+                        PostIngredients.objects.filter(post_id=post).delete();
+                        raise Exception('Invalid ingredients');
+                    
+        
+            ## POST TAGS
+
+            tags = obj['tags'].split(',');
+        
+            if not tags[0] == '':
+                for t in tags:
+                    tag_exists = Tag.objects.filter(name=t).exists();
+                    if tag_exists:
+                        tag = Tag.objects.get(name=t);
+                        TagPost.objects.create(post_id=post, tag_id=tag);
+                    else:
+                        TagPost.objects.filter(post_id=post).delete();
+                        raise Exception('Invalid tags');
+    
+            return HttpResponse('Post created successfully', status=200);
+            
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Response', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+            
 ### /////////// ###

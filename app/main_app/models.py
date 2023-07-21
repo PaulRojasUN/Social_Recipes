@@ -9,7 +9,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db.models.signals import post_migrate, post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import Group
-
+from datetime import datetime
 
 import uuid
 
@@ -143,6 +143,9 @@ class TagPost(models.Model):
     tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);
     post_id = models.ForeignKey('Post', on_delete=models.CASCADE);
 
+    def __str__(self):
+        return str(self.tag_id.name) + ' - ' + str(self.post_id.id);
+
 class TagUser(models.Model):
     tag_id = models.ForeignKey('Tag', on_delete=models.CASCADE);
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE);
@@ -185,20 +188,36 @@ class UnclassifiedIngredient(models.Model):
 ### Post ### 
 
 class Post(models.Model):
+
+    CHOICES = [
+        (0, 'public'),
+        (1, 'followers_only'),
+        (2, 'private'),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False);
     author_user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE);
     recipe_name = models.CharField(max_length=64);
     body_text = models.TextField();
-    visibility = models.SmallIntegerField();
-    post_date = models.DateField(); 
+    visibility = models.SmallIntegerField(choices=CHOICES);
+    post_date = models.DateField(default=datetime.now); 
+    
+    def __str__(self):
+        return str(self.author_user_id.first_name) + ' - ' + str(self.id);
 
 class PostIngredients(models.Model):
     ingredient_id = models.ForeignKey('Ingredient', on_delete=models.CASCADE);
     post_id = models.ForeignKey('Post', on_delete=models.CASCADE);
 
+    def __str__(self):
+        return str(self.ingredient_id.name) + ' - ' + str(self.post_id.id);
+
 
 class PostLike(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE);
     post_id = models.ForeignKey('Post', on_delete=models.CASCADE);
+
+    def __str__(self):
+            return str(self.user_id.first_name) + ' - ' + str(self.post_id.id);
     
 ### ////////////// ###

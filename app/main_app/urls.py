@@ -32,7 +32,8 @@ urlpatterns = [
     path('set_classified_ingredient/', post_views.set_classified_ingredient, name='set_classified_ingredient'),
     path('propose_new_ingredient/', post_views.propose_new_ingredient, name='propose_new_ingredient'),
     path('propose_new_tag/', post_views.propose_new_tag, name='propose_new_tag'),
-
+    path('create_new_post/', post_views.create_new_post, name='create_new_post'),
+    
     # UTILS ENDPOINTS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),
     path('predict_username/<slug:username>', view_utils.predict_username, name='predict_username'),
