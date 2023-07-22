@@ -1,7 +1,21 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser, TagUser, FollowingUser, priviliged_access, admin_access
+from django.db.models import Q
+
+
+# Users
+from .models import CustomUser, FollowingUser
+
+# Tag
+from .models import TagUser
+
+# Post
+from .models import Post
+
+# Access 
+from .models import priviliged_access, admin_access
+
 ###
 from django.http import HttpResponse
 from main_app.forms import CustomUserCreationForm
@@ -48,7 +62,24 @@ def create_post(request):
 @login_required
 def edit_post(request, id):
     if request.method == 'GET':
-        return HttpResponse('edit post' + str(id));
+
+        try:
+            logged_in_user = request.user;
+
+            if not logged_in_user.groups.first().name == 'admin':
+            
+                if not Post.objects.filter(Q(id=id) & Q(author_user_id=logged_in_user)).exists():                
+                    return HttpResponse('Forbidden', status=403);  
+
+            context = {
+                'post_id':id,
+            };
+                
+            return render(request, 'main_app/edit_post.html', context);
+                  
+        except Exception:
+            return HttpResponse('Something went wrong', status=405);
+    
     else:
         return HttpResponse('Unsupported method', status=405);
 

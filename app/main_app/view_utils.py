@@ -6,13 +6,16 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import FollowingUser, CustomUser
 
 # Tags imports 
-from .models import Tag, ClassifiedTag, TagUser
+from .models import Tag, ClassifiedTag, TagUser, TagPost
 
-# Access import
+# Access imports
 from .models import priviliged_access, admin_access
 
-# Ingredients import
+# Ingredients imports
 from .models import Ingredient, ClassifiedIngredient
+
+# Post imports
+from .models import Post, PostIngredients
 
 
 
@@ -204,3 +207,49 @@ def get_ingredient_information(request, ingredient_name):
         return HttpResponse('Unsupported method', status=405);
 
 ### //////////////////////// ###
+
+
+### Edit Post ###
+@login_required
+def get_post_information(request, id):
+    if request.method == 'GET':
+        try:
+            post = Post.objects.get(id=id);
+        
+            recipe_name = post.recipe_name;
+        
+            visibility_raw = post.visibility;
+            
+            visibility = "";
+            
+            if visibility_raw==0:
+                visibility = 'public';
+            elif visibility_raw == 1:
+                visibility = 'followers_only';
+            else:
+                visibility = 'private';
+
+        
+            instructions = post.body_text;
+        
+            ingredients = list(PostIngredients.objects.filter(post_id=post).values_list('ingredient_id__name', flat=True));
+        
+            tags = list(TagPost.objects.filter(post_id=post).values_list('tag_id__name', flat=True));
+        
+            data = {
+                'recipe_name':recipe_name,
+                'visibility':visibility,
+                'instructions':instructions,
+                'ingredients':ingredients,
+                'tags':tags,
+            }
+
+            return JsonResponse(data, safe=False);
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=400);    
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+
+### //////// ###

@@ -1,10 +1,3 @@
-
-// When DOM is ready
-$(function(){
-    localStorage.setItem('ingredients',""); 
-    localStorage.setItem('tags',""); 
- });
-
 //Update ingredients list in the DOM
 function update_ingredients_list(){
     let ingredients = localStorage.getItem('ingredients').split(',');
@@ -25,6 +18,32 @@ function update_tags_list(){
     
 }
 
+$(function(){
+
+    let post_id = $('#input_post_id').val();
+
+    $.ajax({
+        url:'/get_post_information/' + post_id,
+        datatype:'json',
+        type:'GET',
+        success:function(data){
+            $('#input_recipe_name').val(data['recipe_name']);
+            localStorage.setItem('ingredients', data['ingredients']);
+            localStorage.setItem('tags', data['tags']);
+            $('#select_visibility').val(data['visibility']).change();
+            $('#textarea_instructions').val(data['instructions']);
+
+            update_ingredients_list();
+
+            update_tags_list();
+
+        },
+        error:function(e){
+            console.log(e);
+        },
+    });
+    
+});
 
 // Add item to list in localstorage
 function add_item_localstorage(list_name, item){
@@ -49,7 +68,6 @@ $('#input_modal_add_tag').on('input', ()=>{
     $('#btn_modal_add_tag').prop('disabled', true);
     $('#span_modal_add_tag').html('');
 });
-
 
 //// Click Events
 
@@ -162,6 +180,7 @@ $('#btn_modal_create_ingredient').on('click', ()=>{
 });
 
 
+
 // Tags
 
 $('#btn_add_tag').on('click', function() {
@@ -266,14 +285,15 @@ $('#btn_modal_create_tag').on('click', ()=>{
     } else {
         $('#span_modal_create_tag').html('Please, enter a valid name');
     }
-    
 
 });
 
+// Update Post
 
-// Create Post
 
 $('#btn_create_post').on('click', ()=> {
+
+    let post_id = $('#input_post_id').val();
   
     let input_recipe_name = $('#input_recipe_name').val();
   
@@ -286,6 +306,7 @@ $('#btn_create_post').on('click', ()=> {
     let textarea_instructions = $('#textarea_instructions').val();
   
     let data = {
+      'post_id':post_id,
       'recipe_name':input_recipe_name, 
       'ingredients':ingredients_list,
       'tags':tags_list,
@@ -294,32 +315,17 @@ $('#btn_create_post').on('click', ()=> {
     };
   
     $.ajax({
-        url:'/create_new_post/',
+        url:'/edit_post/',
         datatype:'text',
         type:'POST',
         data:data,
         success:function(data){
-            console.log('Post has been successfully created');
+            console.log('Post has been successfully updated');
         },
         error:function(e){
             console.log(e);
         },
     });
-
-    $('#input_recipe_name').val('');
-
-    localStorage.setItem('ingredients', '');
-
-    localStorage.setItem('tags', '');
-
-    $('#select_visibility').val('public');
-
-    $('#textarea_instructions').val('');
-
-    update_ingredients_list();
-
-    update_tags_list();
-
 });
 
 
