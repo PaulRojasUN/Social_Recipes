@@ -1,8 +1,23 @@
 from django.http import HttpResponse
-from .models import FollowingUser, CustomUser, admin_access, priviliged_access, Tag, ClassifiedTag, UnclassifiedTag, TagUser
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import Group
 from django.db.models import Q
+
+# User 
+from .models import FollowingUser, CustomUser
+
+# Tags
+from .models import Tag, ClassifiedTag, UnclassifiedTag, TagUser, TagPost
+
+# Access
+from .models import priviliged_access, admin_access 
+
+# Ingredients
+
+from .models import Ingredient, ClassifiedIngredient, UnclassifiedIngredient
+
+# Posts
+from .models import Post, PostIngredients, PostLike
 
 
 ### Social ###
@@ -233,3 +248,306 @@ def edit_account_fields(request):
 
 ### /////////// ###
 
+
+
+### Ingredients Management ###
+@user_passes_test(priviliged_access)
+def create_ingredient(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+
+            ingredient_name = obj['ingredient_name'].lower();
+        
+            if not ingredient_name:
+                return HttpResponse('Not proper name given', status=460);
+
+            already_exists = Ingredient.objects.filter(name=ingredient_name).exists();
+        
+            if already_exists:
+                return HttpResponse('Another ingredient already has a similar name', status=461);
+            else:
+                ingredient = Ingredient.objects.create(name=ingredient_name);
+                ClassifiedIngredient.objects.create(ingredient_id=ingredient);
+                return HttpResponse('Ingredient was successfully created', status=200);
+    
+        except Exception:
+            return HttpResponse('Bad request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@user_passes_test(priviliged_access)
+def set_classified_ingredient(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+
+            ingredient_name = obj['ingredient_name'];
+
+            ingredient = Ingredient.objects.get(name=ingredient_name);
+
+            in_unclassified_ingredients = UnclassifiedIngredient.objects.filter(ingredient_id=ingredient).exists();
+            
+            in_classified_ingredients = ClassifiedIngredient.objects.filter(ingredient_id=ingredient).exists();
+
+            if  in_unclassified_ingredients and not in_classified_ingredients:
+                UnclassifiedIngredient.objects.get(ingredient_id=ingredient).delete();
+                ClassifiedIngredient.objects.create(ingredient_id=ingredient);
+
+                return HttpResponse('Ingredient set as classified', status=200);
+            else:
+                raise Exception('Sorry, that is not allowed');
+
+        except Exception:
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+
+### ///////////////////// ###
+
+
+### Create Post ###
+
+@login_required
+def propose_new_ingredient(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+        
+            ingredient_name = obj['ingredient_name'].lower();
+        
+            already_exists = Ingredient.objects.filter(name=ingredient_name).exists();
+        
+            if already_exists:
+                return HttpResponse('Ingredient already exists', status=461);
+
+            ingredient = Ingredient.objects.create(name=ingredient_name);
+
+            UnclassifiedIngredient.objects.create(ingredient_id=ingredient);
+
+            return HttpResponse('Ingredient created successfully', status=200);
+        except Exception:
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@login_required
+def propose_new_tag(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+        
+            tag_name = obj['tag_name'].lower();
+        
+            already_exists = Tag.objects.filter(name=tag_name).exists();
+        
+            if already_exists:
+                return HttpResponse('tag already exists', status=461);
+
+            tag = Tag.objects.create(name=tag_name);
+
+            UnclassifiedTag.objects.create(tag_id=tag);
+
+            return HttpResponse('Tag created successfully', status=200);
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@login_required
+def create_new_post(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+
+            ## POST
+
+            post = Post();
+        
+            # Author User
+
+            user = request.user;
+        
+            post.author_user_id = user;
+        
+            # Recipe Name
+
+            post.recipe_name = obj['recipe_name'];
+        
+            # Body (Instructions)
+
+            post.body_text = obj['instructions'];
+        
+            # Visibility
+
+            raw_visibility = obj['visibility'];
+        
+            visibility = -1;
+
+            if (raw_visibility == 'public'):
+                visibility = 0;
+            elif (raw_visibility == 'followers_only'):
+                visibility = 1;
+            elif (raw_visibility == 'private'):
+                visibility = 2;
+            else:
+                raise Exception('Invalid visibility value');
+    
+            post.visibility = visibility;
+
+            post.save();
+
+            ## POST INGREDIENTES
+            ingredients = obj['ingredients'].split(',');
+        
+            if not ingredients[0] == '':
+                for i in ingredients:
+                    ingredient_exists = Ingredient.objects.filter(name=i).exists()
+                    if ingredient_exists:
+                        ingredient = Ingredient.objects.get(name=i);
+                        PostIngredients.objects.create(ingredient_id=ingredient, post_id=post);
+                    else:
+                        PostIngredients.objects.filter(post_id=post).delete();
+                        raise Exception('Invalid ingredients');
+                    
+        
+            ## POST TAGS
+
+            tags = obj['tags'].split(',');
+        
+            if not tags[0] == '':
+                for t in tags:
+                    tag_exists = Tag.objects.filter(name=t).exists();
+                    if tag_exists:
+                        tag = Tag.objects.get(name=t);
+                        TagPost.objects.create(post_id=post, tag_id=tag);
+                    else:
+                        TagPost.objects.filter(post_id=post).delete();
+                        raise Exception('Invalid tags');
+    
+            return HttpResponse('Post created successfully', status=200);
+            
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Response', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+            
+### /////////// ###
+
+
+
+### Edit Post ###
+@login_required
+def edit_post(request):
+    if request.method == 'POST':
+        try:
+                
+            obj = request.POST;
+        
+            # Post
+
+            post_id = obj['post_id'];
+            post = Post.objects.get(id=post_id);
+        
+            # User 
+
+            user = request.user;
+        
+            if not user.groups.first().name == 'admin':
+                if not user == post.author_user_id:
+                    return HttpResponse('Forbidden', status=403);
+
+
+            # Recipe Name
+
+            post.recipe_name = obj['recipe_name'];
+
+            # Body (Instructions)
+
+            post.body_text = obj['instructions'];
+            
+            # Visibility
+
+            raw_visibility = obj['visibility'];
+
+            visibility = -1;
+
+            if (raw_visibility == 'public'):
+                visibility = 0;
+            elif (raw_visibility == 'followers_only'):
+                visibility = 1;
+            elif (raw_visibility == 'private'):
+                visibility = 2;
+            else:
+                raise Exception('Invalid visibility value');
+
+            post.visibility = visibility;
+        
+
+            # Post Ingredients
+
+            in_request_ingredients = obj['ingredients'].split(',');
+
+            current_ingredients = list(PostIngredients.objects.filter(post_id=post).values_list('ingredient_id__name', flat=True));
+        
+            delete_ingredients = [];
+        
+            # Identify what ingredients are going to be deleted
+            for i in current_ingredients:
+                if i not in in_request_ingredients:
+                    delete_ingredients.append(i);
+        
+
+
+            # Assign the new ingredients to the Recipe/Post
+            for i in in_request_ingredients:
+                if not PostIngredients.objects.filter(Q(ingredient_id__name=i) & Q(post_id=post)).exists():
+                    if Ingredient.objects.filter(name=i).filter():
+                        ingredient = Ingredient.objects.get(name=i);
+                        PostIngredients.objects.create(ingredient_id=ingredient, post_id=post);
+        
+            # Delete ingredients from recipe
+            for i in delete_ingredients:
+                ingredient = PostIngredients.objects.get(Q(ingredient_id__name=i) & Q(post_id=post));
+                ingredient.delete();
+
+            # Post Tags
+
+
+            in_request_tags = obj['tags'].split(',');
+
+            current_tags = list(TagPost.objects.filter(post_id=post).values_list('tag_id__name', flat=True));
+        
+            delete_tags = [];
+        
+            # Identify what tags are going to be deleted
+            for t in current_tags:
+                if t not in in_request_tags:
+                    delete_tags.append(t);
+        
+
+            # Assign the new tags to the Recipe/Post
+            for t in in_request_tags:
+                if not TagPost.objects.filter(Q(tag_id__name=t) & Q(post_id=post)).exists():
+                    if Tag.objects.filter(name=t).filter():
+                        tag = Tag.objects.get(name=t);
+                        TagPost.objects.create(tag_id=tag, post_id=post);
+        
+            # Delete tags from recipe
+            for t in delete_tags:
+                tag = TagPost.objects.get(Q(tag_id__name=t) & Q(post_id=post));
+                tag.delete();
+
+            post.save();
+        
+            return HttpResponse('Post has been successfully update', status=200);
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+### //////// ###

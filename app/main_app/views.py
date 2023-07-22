@@ -1,7 +1,21 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser, TagUser, FollowingUser, priviliged_access
+from django.db.models import Q
+
+
+# Users
+from .models import CustomUser, FollowingUser
+
+# Tag
+from .models import TagUser
+
+# Post
+from .models import Post
+
+# Access 
+from .models import priviliged_access, admin_access
+
 ###
 from django.http import HttpResponse
 from main_app.forms import CustomUserCreationForm
@@ -41,14 +55,31 @@ def home(request):
 @login_required
 def create_post(request):
     if request.method == 'GET':
-        return HttpResponse('create_post');
+        return render(request, 'main_app/create_post.html');
     else:
         return HttpResponse('Unsupported method', status=405);
 
 @login_required
 def edit_post(request, id):
     if request.method == 'GET':
-        return HttpResponse('edit post' + str(id));
+
+        try:
+            logged_in_user = request.user;
+
+            if not logged_in_user.groups.first().name == 'admin':
+            
+                if not Post.objects.filter(Q(id=id) & Q(author_user_id=logged_in_user)).exists():                
+                    return HttpResponse('Forbidden', status=403);  
+
+            context = {
+                'post_id':id,
+            };
+                
+            return render(request, 'main_app/edit_post.html', context);
+                  
+        except Exception:
+            return HttpResponse('Something went wrong', status=405);
+    
     else:
         return HttpResponse('Unsupported method', status=405);
 
@@ -165,7 +196,7 @@ def tags_manager(request):
         return HttpResponse('Unsupported method', status=405);
 
 
-@user_passes_test(priviliged_access)
+@user_passes_test(admin_access)
 def admin_manage_users(request):
     if request.method == 'GET':
         return render(request, 'main_app/admin_manage_users.html');
@@ -176,6 +207,13 @@ def admin_manage_users(request):
 def tags_management(request):
     if request.method == 'GET':
         return render(request, 'main_app/tags_management.html');
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@user_passes_test(priviliged_access)
+def ingredients_management(request):
+    if request.method == 'GET':
+        return render(request, 'main_app/ingredients_management.html');
     else:
         return HttpResponse('Unsupported method', status=405);
 

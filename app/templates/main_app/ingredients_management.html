@@ -1,0 +1,36 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block content %}
+<h1>MANAGE INGREDIENTS</h1>
+<div>
+    <h2>CREATE INGREDIENTS</h2>
+    <label for="input_ingredient_name">Name</label>
+    <input id="input_ingredient_name" name="input_ingredient_name" type="text" placeholder="Name" autocomplete="off">
+    <button id="btn_create_ingredient">CREATE INGREDIENT</button>
+
+    <hr>
+    
+    <h2>EDIT INGREDIENT</h2>
+    <label for="input_search_ingredient">Search ingredients</label>
+    <input id="input_search_ingredient" name="input_search_ingredient" type="text" autocomplete="off">
+    
+    <br>
+    
+    <button id="btn_search_ingredient">Search</button>
+    
+    <br>
+
+    <label for="fixed_input_ingredient_name">Name</label>
+    <input id="fixed_input_ingredient_name" name="fixed_input_ingredient_name" type="text" autocomplete="off" disabled>
+
+    <br>
+
+    <label for="input_classified_state">Classified State</label>
+    <input id="input_classified_state" name="input_classified_state" type="text" autocomplete="off" disabled>
+
+    <br>
+
+    <button id="btn_approve" disabled>Approve</button>
+</div>
+<script type="text/javascript" src="{% static 'js/main_app/ingredients_management.js' %}"></script>
+{% endblock %}

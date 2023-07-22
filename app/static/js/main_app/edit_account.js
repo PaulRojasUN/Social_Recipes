@@ -21,7 +21,7 @@ $('#ul_tags').on('click', 'button[id^="btn_li_"]', (event) =>  {
 
     $('#btn_save_changes').prop('disabled', false);
 
-  })
+  });
 
 $(function(){
 

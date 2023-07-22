@@ -1,10 +1,34 @@
 from django.contrib import admin
-from .models import CustomUser, Tag, TagUser, FollowingUser, ClassifiedTag, UnclassifiedTag
 
+# User imports 
+from .models import CustomUser, FollowingUser
+
+# Tags imports
+from .models import Tag, ClassifiedTag, UnclassifiedTag, TagUser, TagPost
+
+# Ingredients imports
+from .models import Ingredient, ClassifiedIngredient, UnclassifiedIngredient
+
+# Posts imports
+from .models import Post, PostIngredients, PostLike
+
+# User
 admin.site.register(CustomUser);
+admin.site.register(FollowingUser);
+
+# Tags
 admin.site.register(Tag);
 admin.site.register(ClassifiedTag);
 admin.site.register(UnclassifiedTag);
 admin.site.register(TagUser);
-admin.site.register(FollowingUser);
 
+# Ingredients
+admin.site.register(Ingredient);
+admin.site.register(ClassifiedIngredient);
+admin.site.register(UnclassifiedIngredient);
+
+# Post
+admin.site.register(Post);
+admin.site.register(PostIngredients);
+admin.site.register(PostLike);
+admin.site.register(TagPost);
