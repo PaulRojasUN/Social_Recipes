@@ -1,4 +1,5 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
+{% load static %}
 {% block content %}
   <h1>Welcome to Social Recipes</h1>
   <a href="{% url 'view_account' username %}" class="btn btn-primary">My Account</a>
@@ -11,5 +12,14 @@
 
   <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
   
+  <div id="posts_container">
+
+  </div>
+
+<button id="btn_display_more_posts">Display more posts</button>
+<button id="btn_reset_posts" hidden>Show Previous Posts</button>
+
+<script src="{% static 'js/main_app/home_page.js' %}"></script>
+
 {% endblock %} 
 
