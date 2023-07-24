@@ -291,7 +291,7 @@ $('#btn_modal_create_tag').on('click', ()=>{
 // Update Post
 
 
-$('#btn_create_post').on('click', ()=> {
+$('#btn_edit_post').on('click', ()=> {
 
     let post_id = $('#input_post_id').val();
   

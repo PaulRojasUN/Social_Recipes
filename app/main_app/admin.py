@@ -10,7 +10,7 @@ from .models import Tag, ClassifiedTag, UnclassifiedTag, TagUser, TagPost
 from .models import Ingredient, ClassifiedIngredient, UnclassifiedIngredient
 
 # Posts imports
-from .models import Post, PostIngredients, PostLike
+from .models import Post, PostIngredients, PostLike, PostSeed
 
 # User
 admin.site.register(CustomUser);
@@ -32,3 +32,4 @@ admin.site.register(Post);
 admin.site.register(PostIngredients);
 admin.site.register(PostLike);
 admin.site.register(TagPost);
+admin.site.register(PostSeed);

@@ -34,6 +34,9 @@ urlpatterns = [
     path('propose_new_tag/', post_views.propose_new_tag, name='propose_new_tag'),
     path('create_new_post/', post_views.create_new_post, name='create_new_post'),
     path('edit_post/', post_views.edit_post, name='edit_post'),
+    path('add_remove_like_post/', post_views.add_remove_like_post, name='add_remove_like_post'),
+    path('increment_post_seed/', post_views.increment_post_seed, name='increment_post_seed'),
+    path('reset_posts/', post_views.reset_posts, name='reset_posts'),
 
     # UTILS ENDPOINTS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),
@@ -44,5 +47,7 @@ urlpatterns = [
     path('get_interested_tags_user/<slug:username>', view_utils.get_interested_tags_user, name='get_interested_tags_user'),
     path('get_ingredient_information/<slug:ingredient_name>', view_utils.get_ingredient_information, name='get_ingredient_information'),
     path('get_post_information/<slug:id>', view_utils.get_post_information, name='get_post_information'),
+    path('get_homepage_posts/', view_utils.get_homepage_posts, name='get_homepage_posts'),
+    path('filter_search/', view_utils.filter_search, name='filter_search'),
 
 ]

@@ -17,7 +17,7 @@ from .models import priviliged_access, admin_access
 from .models import Ingredient, ClassifiedIngredient, UnclassifiedIngredient
 
 # Posts
-from .models import Post, PostIngredients, PostLike
+from .models import Post, PostIngredients, PostLike, PostSeed
 
 
 ### Social ###
@@ -551,3 +551,75 @@ def edit_post(request):
         return HttpResponse('Unsupported method', status=405);
 
 ### //////// ###
+
+
+
+### Home Page ###
+
+@login_required
+def add_remove_like_post(request):
+    if request.method == 'POST':
+        try:
+
+            obj = request.POST;
+            
+            user = request.user;
+        
+            post_id = obj['post_id'];
+
+            post = Post.objects.get(id=post_id);
+        
+            if not PostLike.objects.filter(Q(user_id=user) & Q(post_id=post)):
+                PostLike.objects.create(user_id=user, post_id=post);
+            
+                return HttpResponse('Like added', status=250);
+            else:
+                like = PostLike.objects.get(Q(user_id=user) & Q(post_id=post));
+                like.delete();
+        
+                return HttpResponse('Like removed', status=251);
+
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@login_required
+def increment_post_seed(request):
+    if request.method == 'POST':
+        try:
+            user = request.user;
+
+            post_seed = PostSeed.objects.get_or_create(user_id=user)[0];
+        
+            post_seed.seed = post_seed.seed + 1;
+
+            post_seed.save();
+        
+            return HttpResponse('Post seed incremented successfully', status=200);
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=400);
+            
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@login_required
+def reset_posts(request):
+    if request.method == 'POST':
+        try:
+            user = request.user;
+
+            post_seed = PostSeed.objects.get_or_create(user_id=user)[0];
+        
+            post_seed.seed = 0;
+
+            post_seed.save();
+        
+            return HttpResponse('Post seed reset successfully', status=200);
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);

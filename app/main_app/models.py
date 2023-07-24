@@ -109,8 +109,6 @@ def admin_access(user):
     except Exception:
         return False
     
-
-
 ### //////////////// ###
 
 
@@ -220,4 +218,11 @@ class PostLike(models.Model):
     def __str__(self):
             return str(self.user_id.first_name) + ' - ' + str(self.post_id.id);
     
+
+class PostSeed(models.Model):
+    user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE);
+    seed = models.PositiveSmallIntegerField(default=0);
+
+    def __str__(self):
+        return str(self.user_id.first_name) + ' - ' + str(self.seed)
 ### ////////////// ###

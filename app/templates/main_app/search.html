@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<br>
+<label for="input_search">Search</label>
+<input id="input_search" name="input_search" type="text">
+<br>
+<button id="btn_search">Search</button>
+
+<script src="{% static 'js/main_app/search.js' %}"></script>
+
+{% endblock %}
