@@ -288,6 +288,35 @@ $('#btn_modal_create_tag').on('click', ()=>{
 
 });
 
+// Delete Post
+
+$('#btn_delete_post').on('click', ()=>{
+
+    if (confirm('Are you sure that you want to delete this post?')){
+
+        let post_id = $('#input_post_id').val();
+
+        let data = {
+            'post_id':post_id,
+        };
+
+        $.ajax({
+            url:'/delete_post/',
+            datatype:'text',
+            type:'POST',
+            data:data,
+            success:function(){
+                console.log('Post Deleted Successfully');
+                window.location = '/';
+            },
+            error:function(e){
+                console.log(e);
+            },
+        });
+    }
+});
+
+
 // Update Post
 
 
@@ -321,6 +350,7 @@ $('#btn_edit_post').on('click', ()=> {
         data:data,
         success:function(data){
             console.log('Post has been successfully updated');
+            window.location = '/';
         },
         error:function(e){
             console.log(e);

@@ -235,7 +235,7 @@ update_tags_list();
 
 $('#btn_modal_create_tag').on('click', ()=>{
 
-    let input_modal_create_tag = $('#input_modal_create_tag').val();
+    let input_modal_create_tag = $('#input_modal_create_tag').val().toLowerCase();
 
     if (input_modal_create_tag != ''){
         let data = {
@@ -300,6 +300,7 @@ $('#btn_create_post').on('click', ()=> {
         data:data,
         success:function(data){
             console.log('Post has been successfully created');
+            window.location = '/';
         },
         error:function(e){
             console.log(e);

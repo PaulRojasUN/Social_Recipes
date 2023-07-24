@@ -2,6 +2,9 @@
 {% load static %}
 {% block content %}
 <p>Post made by {{post_owner_name}}</p>
+<br>
+<a href="/edit_post/{{post_id}}" {% if is_hidden %} hidden  {% endif %}>Edit Post</a>
+<br>
 <input id="input_post_id" value="{{post_id}}" type="hidden">
 <label for="input_recipe_name">Name</label>
 <input id="input_recipe_name" name="input_recipe_name" type="text" disabled>

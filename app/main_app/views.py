@@ -96,18 +96,26 @@ def view_post(request, id):
 
             post_owner = post.author_user_id;
 
-            context = {
-                'post_id':post.id,
-                'post_owner_name':post_owner.first_name,
-            }
+            is_hidden = True;
 
             if not user.groups.first().name == 'admin':
+                is_owner = user == post_owner;
+                if is_owner:
+                    is_hidden = False;
                 if (post.visibility == 2):
-                    if not user == post_owner:
+                    if not is_owner:
                         return HttpResponse('Forbidden', status=403);
                 elif (post.visibility == 1):
                     if FollowingUser.objects.filter(Q(follower_user_id=user)&Q(target_user_id=post_owner)).exists():
                         return HttpResponse('Forbidden', status=403);
+            else:
+                is_hidden = False;
+
+            context = {
+                'post_id':post.id,
+                'post_owner_name':post_owner.first_name,
+                'is_hidden':is_hidden,
+            }
 
             return render(request, 'main_app/view_post.html', context); 
                     

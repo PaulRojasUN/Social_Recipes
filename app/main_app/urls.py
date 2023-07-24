@@ -37,6 +37,7 @@ urlpatterns = [
     path('add_remove_like_post/', post_views.add_remove_like_post, name='add_remove_like_post'),
     path('increment_post_seed/', post_views.increment_post_seed, name='increment_post_seed'),
     path('reset_posts/', post_views.reset_posts, name='reset_posts'),
+    path('delete_post/', post_views.delete_post, name='delete_post'),
 
     # UTILS ENDPOINTS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),

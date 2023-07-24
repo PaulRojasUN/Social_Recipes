@@ -550,6 +550,33 @@ def edit_post(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+
+@login_required
+def delete_post(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+        
+            if not Post.objects.filter(id=obj['post_id']).exists():
+                raise Exception('Such post does not exist');
+    
+            user = request.user;
+            
+            post = Post.objects.get(id=obj['post_id']);
+
+            if not user.groups.first().name == 'admin':
+                if not post.author_user_id == user:
+                    return HttpResponse('Forbidden', status=403);             
+    
+            post.delete();
+        
+            return HttpResponse('Post deleted successfully', status=200);     
+            
+        except Exception:
+            return HttpResponse('Bad Request', status=405);     
+    else:
+        return HttpResponse('Unsupported method', status=405); 
+
 ### //////// ###
 
 

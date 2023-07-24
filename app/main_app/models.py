@@ -201,7 +201,7 @@ class Post(models.Model):
     post_date = models.DateField(default=datetime.now); 
     
     def __str__(self):
-        return str(self.author_user_id.first_name) + ' - ' + str(self.id);
+        return str(self.author_user_id.first_name) + ' - ' + str(self.recipe_name);
 
 class PostIngredients(models.Model):
     ingredient_id = models.ForeignKey('Ingredient', on_delete=models.CASCADE);
