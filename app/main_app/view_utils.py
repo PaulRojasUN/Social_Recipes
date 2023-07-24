@@ -46,6 +46,7 @@ def get_homepage_posts(request):
             posts = list(Post.objects.values(
                 'id',
                 'author_user_id__first_name',
+                'author_user_id__username',
                 'recipe_name',
                 'body_text',
                 'visibility',
@@ -337,6 +338,7 @@ def filter_search(request):
             posts = list(Post.objects.values(
                 'id',
                 'author_user_id__first_name',
+                'author_user_id__username',
                 'recipe_name',
                 'body_text',
                 'visibility',

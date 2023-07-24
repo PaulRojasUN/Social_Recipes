@@ -86,7 +86,34 @@ def edit_post(request, id):
 @login_required
 def view_post(request, id):
     if request.method == 'GET':
-        return HttpResponse('view post' + str(id));
+        try:
+            if not Post.objects.filter(id=id).exists():
+                raise Exception('Such post does not exist');
+
+            user = request.user;
+
+            post = Post.objects.get(id=id);
+
+            post_owner = post.author_user_id;
+
+            context = {
+                'post_id':post.id,
+                'post_owner_name':post_owner.first_name,
+            }
+
+            if not user.groups.first().name == 'admin':
+                if (post.visibility == 2):
+                    if not user == post_owner:
+                        return HttpResponse('Forbidden', status=403);
+                elif (post.visibility == 1):
+                    if FollowingUser.objects.filter(Q(follower_user_id=user)&Q(target_user_id=post_owner)).exists():
+                        return HttpResponse('Forbidden', status=403);
+
+            return render(request, 'main_app/view_post.html', context); 
+                    
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Request', status=400);
     else:
         return HttpResponse('Unsupported method', status=405);
 

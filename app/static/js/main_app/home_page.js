@@ -8,9 +8,9 @@ function load_posts(){
         
         if (data.length > 0){
           data.forEach(element => {
-            let string_post = `<div class="post">
-                    <p><span class="fw-bold">${element['author_user_id__first_name']}</span>
-                    posted <span class="fw-bold">${element['recipe_name']}</span>
+            let string_post = `<div class="div_post">
+                    <a href="view_account/${element['author_user_id__username']}"><p><span class="fw-bold">${element['author_user_id__first_name']}</span></a>
+                    posted <a href="/view_post/${element['id']}"><span class="fw-bold">${element['recipe_name']}</span></a>
                      on <span class="fw-bold">${element['post_date']}</span></p>
                      <div><pre>${element['body_text']}</pre></div>
                     <p>Likes <span class="fw-bold">#</span>
