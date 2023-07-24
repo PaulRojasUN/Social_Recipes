@@ -556,6 +556,7 @@ def edit_post(request):
 
 ### Home Page ###
 
+@login_required
 def add_remove_like_post(request):
     if request.method == 'POST':
         try:
@@ -584,7 +585,7 @@ def add_remove_like_post(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-
+@login_required
 def increment_post_seed(request):
     if request.method == 'POST':
         try:
@@ -604,7 +605,7 @@ def increment_post_seed(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
-
+@login_required
 def reset_posts(request):
     if request.method == 'POST':
         try:

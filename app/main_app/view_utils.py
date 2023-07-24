@@ -20,6 +20,7 @@ from .models import Post, PostIngredients, PostLike, PostSeed
 
 ### Homepage ###
 
+@login_required
 def get_homepage_posts(request):
     if request.method == 'GET':
         try:
@@ -299,3 +300,58 @@ def get_post_information(request, id):
 
 ### //////// ###
 
+
+
+### Search ###
+
+@login_required
+def filter_search(request):
+    if request.method == 'GET':
+        try:
+                    
+            obj = request.GET;
+
+            user = request.user;
+
+            users = [];
+
+            recipes = []
+          
+            recipes = list(Post.objects.filter(recipe_name__contains=obj['par1']).values_list('recipe_name', flat=True));
+            users = list(CustomUser.objects.filter(first_name__contains=obj['par1']).values_list('username', flat=True));
+
+            print(users)
+
+            external_visible = FollowingUser.objects.filter(
+                Q(follower_user_id=user.id) & Q(target_user_id=OuterRef('author_user_id'))
+            ).values('target_user_id'
+            ).annotate(followed=Count('target_user_id')
+            ).values('followed');
+
+            liked_posts = PostLike.objects.filter(
+                post_id=OuterRef('id')
+            ).values('post_id'
+            ).annotate(likes_count=Count('id')
+            ).values('likes_count');
+
+            posts = list(Post.objects.values(
+                'id',
+                'author_user_id__first_name',
+                'recipe_name',
+                'body_text',
+                'visibility',
+                'post_date',
+            ).annotate(liked=Subquery(liked_posts),
+                       visible=Subquery(external_visible)
+            ).filter( Q(Q(visibility=0) | Q(author_user_id=user) | Q(Q(visibility=1) & Q(visible=1))) & 
+                     Q(Q(recipe_name__in=recipes) | Q(author_user_id__username__in=users)))
+            .order_by('-post_date'))[:10];
+
+            return JsonResponse(posts, safe=False);
+    
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=400);        
+    else: 
+        return HttpResponse('Unsupported method', status=405);
+### ////// ###

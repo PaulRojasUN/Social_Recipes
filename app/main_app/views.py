@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Subquery, OuterRef, Count
 
 
 # Users
@@ -11,13 +11,13 @@ from .models import CustomUser, FollowingUser
 from .models import TagUser
 
 # Post
-from .models import Post
+from .models import Post, PostLike
 
 # Access 
 from .models import priviliged_access, admin_access
 
 ###
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from main_app.forms import CustomUserCreationForm
 from django.contrib.auth.decorators import user_passes_test
 
@@ -151,9 +151,9 @@ def social(request, username):
 
             target_id = target_user.id;
 
-            follower_users = FollowingUser.objects.filter(follower_user_id__id=target_id).values('target_user_id__first_name');
+            follower_users = FollowingUser.objects.filter(follower_user_id__id=target_id).values('target_user_id__first_name', 'target_user_id__username');
 
-            target_users = FollowingUser.objects.filter(target_user_id__id=target_id).values('follower_user_id__first_name');
+            target_users = FollowingUser.objects.filter(target_user_id__id=target_id).values('follower_user_id__first_name','follower_user_id__username');
 
             context = {
                 'target_user_name': target_user_name,
@@ -170,21 +170,30 @@ def social(request, username):
 
 @login_required
 def filter(request):
-    if request.method == 'GET':
-        
-        obj = request.GET;
+    if request.method == 'GET':    
+        try:
+            obj = request.GET;
 
-        for i in obj:
-            print(str(i) + ":" + str(obj[i]));
-            
-        return HttpResponse('filter');
-    else:
+            username = request.user.username,
+            print(type(request.user.username))
+            print("sdsa")
+            context = {
+                'par1':obj['par1'],
+                'username':str(username[0]),#str(username),
+            }
+
+            return render(request, 'main_app/filter.html', context);
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Request', status=400);    
+        
+    else: 
         return HttpResponse('Unsupported method', status=405);
 
 @login_required
 def search(request):
     if request.method == 'GET':
-        return HttpResponse('search');
+        return render(request, 'main_app/search.html');
     else:
         return HttpResponse('Unsupported method', status=405);
 

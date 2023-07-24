@@ -48,5 +48,6 @@ urlpatterns = [
     path('get_ingredient_information/<slug:ingredient_name>', view_utils.get_ingredient_information, name='get_ingredient_information'),
     path('get_post_information/<slug:id>', view_utils.get_post_information, name='get_post_information'),
     path('get_homepage_posts/', view_utils.get_homepage_posts, name='get_homepage_posts'),
+    path('filter_search/', view_utils.filter_search, name='filter_search'),
 
 ]
