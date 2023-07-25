@@ -71,7 +71,9 @@ $('#btn_modal_search_ingredient').on('click', ()=>{
                 url:'/get_ingredient_information/'+input_modal_add_ingredient,
                 datatype:'json',
                 type:'GET',
-                success:function(data){
+                success:function(data, status, xhr){
+                    let status_code = xhr.status;
+                    console.log(status_code);
                     $('#btn_modal_add_ingredient').prop('disabled', false);
                     $('#span_modal_add_ingredient').html('Ingredient was found');
                 },
@@ -96,7 +98,6 @@ $('#btn_modal_add_ingredient').on('click', ()=>{
     let  input_modal_add_ingredient = $('#input_modal_add_ingredient').val().toLowerCase();
     
     if (input_modal_add_ingredient != ''){
-        console.log(input_modal_add_ingredient)
         add_item_localstorage('ingredients', input_modal_add_ingredient);
 
         update_ingredients_list();
@@ -235,7 +236,7 @@ update_tags_list();
 
 $('#btn_modal_create_tag').on('click', ()=>{
 
-    let input_modal_create_tag = $('#input_modal_create_tag').val().toLowerCase();
+    let input_modal_create_tag = $('#input_modal_create_tag').val().toLowerCase()   ;
 
     if (input_modal_create_tag != ''){
         let data = {

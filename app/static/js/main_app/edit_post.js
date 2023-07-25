@@ -89,7 +89,9 @@ $('#btn_modal_search_ingredient').on('click', ()=>{
                 url:'/get_ingredient_information/'+input_modal_add_ingredient,
                 datatype:'json',
                 type:'GET',
-                success:function(data){
+                success:function(data, status, xhr){
+                    let status_code = xhr.status;
+                    console.log(status_code)
                     $('#btn_modal_add_ingredient').prop('disabled', false);
                     $('#span_modal_add_ingredient').html('Ingredient was found');
                 },
