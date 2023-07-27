@@ -24,21 +24,6 @@ function load_posts(){
           </div>
           `
 
-        //     <div class="card div_post">
-        //     <div class="card-header">
-        //       ${element['recipe_name']}
-        //     </div>
-        //     <div class="card-body">
-        //       <h5 class="card-title">Posted by <a href="view_account/${element['author_user_id__username']}"><p><span class="fw-bold">${element['author_user_id__first_name']}</span></a></h5>
-        //       <p class="card-text">${element['body_text']}</p>
-        //       <a href="/view_post/${element['id']}" class="btn btn-primary">View Details</a>
-        //       <p>Likes <span id="span_likes_${element['id']}" class="fw-bold">${element['likes']!=null ? element['likes'] : 0}</span>
-        //     ${element['liked']===1 ? `<button id=\"btn_like_${element['id']}\" class="btn_like">Remove Like</button></p>`
-        //   : `<button id=\"btn_like_${element['id']}\" class="btn_like">Like</button></p>`}
-        //     </div>
-        // </div>
-
-
             $('#posts_container').append(string_post);            
           });
 
