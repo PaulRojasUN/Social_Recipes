@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Subquery, OuterRef, Count
+from django.db.models import Q
+from django.urls import reverse
+from django.http import HttpResponse
+from main_app.forms import CustomUserCreationForm
+from django.contrib.auth.decorators import user_passes_test
 
 
 # Users
@@ -17,9 +21,7 @@ from .models import Post, PostLike
 from .models import priviliged_access, admin_access
 
 ###
-from django.http import HttpResponse, JsonResponse
-from main_app.forms import CustomUserCreationForm
-from django.contrib.auth.decorators import user_passes_test
+
 
 
 ### RENDERING ENDPOINTS ###
@@ -125,6 +127,25 @@ def view_post(request, id):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+
+@login_required
+def view_account_redirect(request):
+    if request.method == 'GET':
+        try:
+            username = request.user.username;
+            
+            print(type(username));
+
+            url = reverse('view_account', args=[username])
+
+            return redirect(url);
+
+        except Exception as e:
+            print(e);
+            return HttpResponse('User was not found', status=404);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
 @login_required
 def view_account(request, username):
     if request.method == 'GET':
@@ -174,6 +195,24 @@ def edit_account(request, username):
             return HttpResponse('User was not found', status=404)
     else:
         return HttpResponse('Unsupported method', status=405);
+
+
+@login_required
+def social_redirect(request):
+    if request.method == 'GET':
+        try:
+            
+            username = request.user.username;
+
+            url = reverse('social', args=[username]);
+
+            return redirect(url);
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=404);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
 
 @login_required
 def social(request, username):
