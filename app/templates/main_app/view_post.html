@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<p>Post made by {{post_owner_name}}</p>
+<!-- <p>Post made by {{post_owner_name}}</p>
 <br>
 <a href="/edit_post/{{post_id}}" {% if is_hidden %} hidden  {% endif %}>Edit Post</a>
 <br>
@@ -28,7 +28,79 @@
 <br><br>
 <label for="textarea_instructions">Instructions</label>
 <br>
-<textarea name="textarea_instructions" id="textarea_instructions" cols="30" rows="10" disabled></textarea>
+<textarea name="textarea_instructions" id="textarea_instructions" cols="30" rows="10" disabled></textarea> -->
+
+
+<div class="contenedor d-flex justify-content-center align-items-center">
+
+    <div class="row border border-3 border-black p-3">
+        <h1 class="text-center">View Recipe</h1>
+        
+        <div class="row">
+            <h2>Post made by {{post_owner_name}}</h2>
+            
+        </div>
+        
+        <input id="input_post_id" value="{{post_id}}" type="hidden">
+        <div class="col-12 col-md-6">
+  
+            <div class="mb-3">
+              <label for="input_recipe_name">Name</label>
+              <input id="input_recipe_name" name="input_recipe_name" type="text" class="form-control" disabled>
+            </div>
+  
+  
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="mb-3">
+  
+                        <label class="label-form" for="ul_ingredients">Ingredients</label>
+                        <ul id="ul_ingredients" class="mini-list">
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="mb-3">
+                        <label class="label-form">Tags</label>
+                        <ul id="ul_tags" class="mini-list">
+                        </ul>
+                    </div>        
+                </div>
+                <a href="/edit_post/{{post_id}}" {% if is_hidden %} hidden  {% endif %} class="btn btn-primary">Edit Post</a>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="mb-3">
+  
+                <label for="select_visibility">Visibility</label>
+                <select class="form-control" name="select_visibility" id="select_visibility" disabled>
+                  <option value="public">Public</option>
+                  <option value="followers_only">Followers Only</option>
+                  <option value="private">Private</option>
+                </select>
+            </div>
+            <div class="mb-3">
+  
+                <label for="textarea_instructions">Instructions</label>
+                <textarea name="textarea_instructions" id="textarea_instructions" class="form-control" cols="30" rows="10" disabled></textarea>
+          
+            </div>
+            
+        </div>
+        
+        <div class="d-flex justify-content-center">
+            <a class="btn btn-primary" href="/">Back</a>    
+        </div>
+        
+    </div>
+    <!-- <div class="d-flex justify-content-center">
+        
+    </div> -->
+
+  </div>
+  
+
+
 
 <script src="{% static 'js/main_app/view_post.js' %}"></script>
 

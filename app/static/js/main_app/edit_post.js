@@ -3,7 +3,10 @@ function update_ingredients_list(){
     let ingredients = localStorage.getItem('ingredients').split(',');
     $('#ul_ingredients').html('');
     if (ingredients[0] != "") {
-        ingredients.forEach(e => $('#ul_ingredients').append('<li>' + e + '<button id=\"'+ 'btn_li_ing_' + e +'\">x</button></li>'));
+        ingredients.forEach(e => $('#ul_ingredients').append('<li>' +
+        '<span class=\"badge rounded-pill text-bg-secondary\">' +
+        e + '</span>' + '<button id=\"' + 'btn_li_ing_' + e +
+        '\" class=\"btn btn-danger"\"><i class="bi bi-x-circle delete-from-ul"></i></button></li>'));
     }
     
 }
@@ -13,7 +16,10 @@ function update_tags_list(){
     let tags = localStorage.getItem('tags').split(',');
     $('#ul_tags').html('');
     if (tags[0] != "") {
-        tags.forEach(e => $('#ul_tags').append('<li>' + e + '<button id=\"'+ 'btn_li_tags_' + e +'\">x</button></li>'));
+        tags.forEach(e => $('#ul_tags').append('<li>' +
+        '<span class=\"badge rounded-pill text-bg-secondary\">' +
+        e + '</span>' + '<button id=\"' + 'btn_li_tags_' + e +
+        '\" class=\"btn btn-danger"\"><i class="bi bi-x-circle delete-from-ul"></i></button></li>'));
     }
     
 }

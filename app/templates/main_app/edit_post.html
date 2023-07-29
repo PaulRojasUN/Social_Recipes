@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<h1> EDIT POST</h1>
+<!-- <h1> EDIT POST</h1>
 <input id="input_post_id" type="hidden" value="{{post_id}}">
 <label for="input_recipe_name">Name</label>
 <input id="input_recipe_name" name="input_recipe_name" type="text">
@@ -32,7 +32,78 @@
 <button id="btn_delete_post" class="btn btn-danger">Delete Post</button>
 <br><br>
 <a href="/">Cancel</a>
-<button id="btn_edit_post">Edit</button>
+<button id="btn_edit_post">Edit</button> -->
+
+
+
+<div class="contenedor d-flex justify-content-center align-items-center">
+  <input id="input_post_id" type="hidden" value="{{post_id}}">
+  <div class="row border border-3 border-black p-3">
+      <h1 class="text-center">Edit Recipe</h1>
+      <div class="col-12 col-md-6">
+
+          <div class="mb-3">
+            <label for="input_recipe_name">Name</label>
+            <input id="input_recipe_name" name="input_recipe_name" type="text" class="form-control">
+          </div>
+
+
+          <div class="row">
+              <div class="col-12 col-md-6">
+                  <div class="mb-3">
+
+                      <label class="label-form" for="ul_ingredients">Ingredients</label>
+                      <button id="btn_add_ingredient" class="btn btn-success mb-2"><i class="bi bi-plus-circle"></i></button>
+                      <ul id="ul_ingredients" class="mini-list">
+                      </ul>
+                  </div>
+              </div>
+              <div class="col-12 col-md-6">
+                  <div class="mb-3">
+                      <label class="label-form">Tags</label>
+                      <button id="btn_add_tag" class="btn btn-success mb-2"><i class="bi bi-plus-circle"></i></button>
+                      <br>    
+                      <ul id="ul_tags" class="mini-list">
+                      </ul>
+                  </div>        
+              </div>
+              <div class="d-flex justify-content-start">
+                <button id="btn_delete_post" class="btn btn-danger">Delete Post</button>
+              </div>
+              
+          </div>
+      </div>
+      <div class="col-12 col-md-6">
+          <div class="mb-3">
+                  
+              </select>
+
+              <label for="select_visibility">Visibility</label>
+              <select class="form-control" name="select_visibility" id="select_visibility">
+                <option value="public">Public</option>
+                <option value="followers_only">Followers Only</option>
+                <option value="private">Private</option>
+              </select>
+          </div>
+          <div class="mb-3">
+
+              <label for="textarea_instructions">Instructions</label>
+              <textarea name="textarea_instructions" id="textarea_instructions" class="form-control" cols="30" rows="10"></textarea>
+        
+          </div>
+
+
+
+          
+          <div class="d-flex justify-content-around">
+                  <a class="btn btn-danger" href="/">Cancel</a>
+                  <button  id="btn_edit_post" class="btn btn-primary">Edit</button>
+          </div>
+
+      </div>
+  </div>
+</div>
+
 
 
 <!--Ingredients Modal-->
