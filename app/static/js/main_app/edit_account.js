@@ -2,7 +2,13 @@ function update_tags_list(){
     let tags = localStorage.getItem('tags').split(',');
     $('#ul_tags').html('');
     if (tags[0] != "") {
-        tags.forEach(e => $('#ul_tags').append('<li>' + e + '<button id=\"'+ 'btn_li_' + e +'\">x</button></li>'));
+        tags.forEach(e => $('#ul_tags').append(
+            '<li>' +
+                '<span class=\"badge rounded-pill text-bg-secondary\">' +
+                    e +
+                '</span>' +
+                '<button id=\"'+ 'btn_li_' + e +'\" class=\"btn btn-danger"\"><i class="bi bi-x-circle delete-from-ul"></i></button></li>'
+            ));
     }
     
 }

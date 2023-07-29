@@ -2,49 +2,52 @@
 {% load static %}
 {% block content %}
 <div>
-    <div class="container">
-        <div class="d-flex flex-row justify-content-center">
-           
-                <div class="col-4">
+
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+ 
+
+        <div>    
+            <h1 class="text-center">VIEW ACCOUNT</h1>
+            <div class="view-account-form">
+                <div class="row">
+                    
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label" for="name">Name</label>
+                            <input name="name" type="text" value={{name}} class="form-control" disabled>
+                        </div>
                 
-                    <div class="form-outline">
-                    
-                    <h1>VIEW ACCOUNT</h1>
-                    <div class="mb-3">
-                        <label class="form-label" for="name">Name</label>
-                        <input name="name" type="text" value={{name}} class="form-control" disabled>
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Username</label>
+                            <input id="target_username" name="username" type="text" value={{target_username}} class="form-control" disabled>
+                        </div>
+                        <a class="btn btn-secondary" href="{% url 'social' target_username %}">Social</a>
+                        <a class="btn btn-secondary" href="{% url 'filter' %}?par1={{ target_username }}">User's Posts</a>
+                        <div class="form">
+                            <input id="input_follower" name="follower_user" type="hidden" value="{{ logged_username }}"">
+                            <input id="input_target" name="target_user" type="hidden" value="{{ target_username }}"">
+                            <button id="btn_follow" class="btn btn-secondary">Follow User</button>
+                        </div>
+                        <a class="btn btn-danger" href="{% url 'home' %}" >Back</a>
                     </div>
-            
-                    <div class="mb-3">
-                        <label class="form-label" for="username">Username</label>
-                        <input id="target_username" name="username" type="text" value={{target_username}} class="form-control" disabled>
+                    
+                    <div class="col-12 col-md-6">
+                        <label for="tags">Interest Tags</label>
+                        <ul class="mini-list">
+                            {% for tag in tags %}
+                                    <li><span class="badge rounded-pill text-bg-secondary">{{tag.tag_id__name}}</span></li>
+                                {% empty %}
+                                    <li>The user doesn't have preferred tags</li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    
-                    
-                    <label for="tags">Interest Tags</label>
-                    <ul class="list-group mb-3">
-                        {% for tag in tags %}
-                                <li class="list-group-item">{{tag.tag_id__name}}</li>
-                            {% empty %}
-                                <li class="list-group-item">The user doesn't have preferred tags</li>
-                        {% endfor %}
-                    </ul>
-                    
-                    <a class="btn btn-secondary" href="{% url 'social' target_username %}">Social</a>
-                    <a class="btn btn-secondary" href="{% url 'filter' %}?par1={{ target_username }}">User's Posts</a>
-            
-                    <div class="form">
-                        <input id="input_follower" name="follower_user" type="hidden" value="{{ logged_username }}"">
-                        <input id="input_target" name="target_user" type="hidden" value="{{ target_username }}"">
-                        <button id="btn_follow" class="btn btn-secondary">Follow User</button>
-                    </div>
-                    <a class="btn btn-danger" href="{% url 'home' %}" >Back</a>
                 </div>
             </div>
-                
         </div>
-        
-    </div>
+            
+</div>
+
+
     <script type="text/javascript" src='{% static "js/main_app/view_account.js" %}'></script>
 </div>
 {% endblock %}

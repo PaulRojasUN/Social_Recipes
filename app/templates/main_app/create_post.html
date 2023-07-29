@@ -1,35 +1,69 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<h1> CREATE POST</h1>
-<label for="input_recipe_name">Name</label>
-<input id="input_recipe_name" name="input_recipe_name" type="text">
-<br><br>
-<label for="ul_ingredients">Ingredients</label>
-<button id="btn_add_ingredient">Add Ingredient</button>
-<br>
-<ul id="ul_ingredients">
-</ul>
-<br><br>
-<label for="input_tags">tags</label>
-<button id="btn_add_tag">Add tag</button>
-<br>    
-<ul id="ul_tags">
-</ul>
-<br><br>
-<label for="select_visibility"></label>
-<select name="select_visibility" id="select_visibility">
-    <option value="public">Public</option>
-    <option value="followers_only">Followers Only</option>
-    <option value="private">Private</option>
-</select>
-<br><br>
-<label for="textarea_instructions">Instructions</label>
-<br>
-<textarea name="textarea_instructions" id="textarea_instructions" cols="30" rows="10"></textarea>
-<br><br>
-<a href="/">Cancel</a>
-<button id="btn_create_post">Create</button>
+<div class="contenedor d-flex justify-content-center align-items-center">
+
+  <div class="row border border-3 border-black p-3">
+      <h1 class="text-center">Create Recipe</h1>
+      <div class="col-12 col-md-6">
+
+          <div class="mb-3">
+            <label for="input_recipe_name">Name</label>
+            <input id="input_recipe_name" name="input_recipe_name" type="text" class="form-control">
+          </div>
+
+
+          <div class="row">
+              <div class="col-12 col-md-6">
+                  <div class="mb-3">
+
+                      <label class="label-form" for="ul_ingredients">Ingredients</label>
+                      <button id="btn_add_ingredient" class="btn btn-success mb-2"><i class="bi bi-plus-circle"></i></button>
+                      <ul id="ul_ingredients" class="mini-list">
+                      </ul>
+                  </div>
+              </div>
+              <div class="col-12 col-md-6">
+                  <div class="mb-3">
+                      <label class="label-form">Tags</label>
+                      <button id="btn_add_tag" class="btn btn-success mb-2"><i class="bi bi-plus-circle"></i></button>
+                      <br>    
+                      <ul id="ul_tags" class="mini-list">
+                      </ul>
+                  </div>        
+              </div>
+          </div>
+      </div>
+      <div class="col-12 col-md-6">
+          <div class="mb-3">
+                  
+              </select>
+
+              <label for="select_visibility">Visibility</label>
+              <select class="form-control" name="select_visibility" id="select_visibility">
+                <option value="public">Public</option>
+                <option value="followers_only">Followers Only</option>
+                <option value="private">Private</option>
+              </select>
+          </div>
+          <div class="mb-3">
+
+              <label for="textarea_instructions">Instructions</label>
+              <textarea name="textarea_instructions" id="textarea_instructions" class="form-control" cols="30" rows="10"></textarea>
+        
+          </div>
+          <div class="d-flex justify-content-around">
+                  <a class="btn btn-danger" href="/">Cancel</a>
+                  <button  id="btn_create_post" class="btn btn-primary">Create</button>
+          </div>
+
+      </div>
+  </div>
+</div>
+
+
+
+
 
 
 <!--Ingredients Modal-->
@@ -40,21 +74,18 @@
           <h4 class="modal-title">Add Ingredients</h4>
         </div>
         <div class="modal-body">
-          <label for="input_modal_add_ingredient">Search Ingredient</label>
-          <input id="input_modal_add_ingredient" name="input_modal_add_ingredient" type="text" autocomplete="off">
-          <button id="btn_modal_search_ingredient">Search</button>
-          <br>
-          <button id="btn_modal_add_ingredient" autocomplete="off" disabled>Add Ingredient</button>
+          <label for="input_modal_add_ingredient" class="label-form mb-2">Search Ingredient</label>
+          <input id="input_modal_add_ingredient" name="input_modal_add_ingredient" type="text" autocomplete="off" class="form-control mb-2">
+          <button id="btn_modal_search_ingredient" class="btn btn-secondary">Search</button>
+          <button id="btn_modal_add_ingredient" class="btn btn-primary" autocomplete="off" disabled>Add Ingredient</button>
           <span id="span_modal_add_ingredient"></span>
           <hr>
-          <label for="input_modal_create_ingredient">Create New Ingredient</label>
-          <input id="input_modal_create_ingredient" name="input_modal_create_ingredient" type="text">
+          <label for="input_modal_create_ingredient"  class="label-form mb-2">Create New Ingredient</label>
+          <input id="input_modal_create_ingredient" name="input_modal_create_ingredient" type="text" class="form-control mb-2">
           <span id="span_modal_create_ingredient"></span>
-          <br>
-          <button id="btn_modal_create_ingredient">Create Ingredient</button>
+          <button id="btn_modal_create_ingredient" class="btn btn-primary">Create Ingredient</button>
         </div>
-        <div class="modal-footer">
-
+        <div class="modal-footer d-flex justify-content-center">
           <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
         </div>
       </div>
@@ -69,20 +100,18 @@
           <h4 class="modal-title">Add Tags</h4>
         </div>
         <div class="modal-body">
-          <label for="input_modal_add_tag">Search Tag</label>
-          <input id="input_modal_add_tag" name="input_modal_add_tag" type="text" autocomplete="off">
-          <button id="btn_modal_search_tag">Search</button>
-          <br>
-          <button id="btn_modal_add_tag" autocomplete="off" disabled>Add Tag</button>
+          <label for="input_modal_add_tag" class="label-form mb-2">Search Tag</label>
+          <input id="input_modal_add_tag" name="input_modal_add_tag" type="text" autocomplete="off" class="form-control mb-2">
+          <button id="btn_modal_search_tag" class="btn btn-secondary">Search</button>
+          <button id="btn_modal_add_tag" class="btn btn-primary" autocomplete="off" disabled>Add Tag</button>
           <span id="span_modal_add_tag"></span>
           <hr>
-          <label for="input_modal_create_tag">Create New Tag</label>
-          <input id="input_modal_create_tag" name="input_modal_create_tag" type="text">
+          <label for="input_modal_create_tag" class="label-form mb-2">Create New Tag</label>
+          <input id="input_modal_create_tag" name="input_modal_create_tag" type="text" class="form-control mb-2">
+          <button id="btn_modal_create_tag" class="btn btn-primary">Create Tag</button>
           <span id="span_modal_create_tag"></span>
-          <br>
-          <button id="btn_modal_create_tag">Create Tag</button>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer d-flex justify-content-center">
           <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
         </div>
       </div>

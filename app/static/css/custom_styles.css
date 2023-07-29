@@ -2,3 +2,37 @@
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.view-account-form {
+    padding: 10px;
+    background-color: rgb(148, 142, 152);
+    width: 600px;
+}
+
+.mini-list {
+    height: 200px;
+    overflow-y: auto; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: cadetblue;
+  }
+  
+  .mini-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .mini-list li {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .mini-list li:last-child {
+    border-bottom: none;
+  }
+
+  .delete-from-ul {
+    pointer-events: none;
+  }
