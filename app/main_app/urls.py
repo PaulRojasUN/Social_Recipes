@@ -41,6 +41,7 @@ urlpatterns = [
     path('reset_posts/', post_views.reset_posts, name='reset_posts'),
     path('delete_post/', post_views.delete_post, name='delete_post'),
     path('migrate_tag/', post_views.migrate_tag, name='migrate_tag'),
+    path('migrate_ingredient/', post_views.migrate_ingredient, name='migrate_ingredient'),
 
     # UTILS ENDPOINTS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),

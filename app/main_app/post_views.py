@@ -161,7 +161,7 @@ def set_classified_tag(request):
         return HttpResponse('Unsupported method', status=405);
 
 
-
+@user_passes_test(priviliged_access)
 def migrate_tag(request):
     if request.method == 'POST':
             try:
@@ -359,6 +359,35 @@ def set_classified_ingredient(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@user_passes_test(priviliged_access)
+def migrate_ingredient(request):
+    if request.method == 'POST':
+            try:
+                obj = request.POST;
+            
+                migrate_ingredient = Ingredient.objects.get(name=obj['migrate_ingredient'].lower());
+
+                target_ingredient = Ingredient.objects.get(name=obj['target_ingredient'].lower());
+
+                post_ing_queryset = PostIngredients.objects.filter(ingredient_id=migrate_ingredient);
+                
+                for t in post_ing_queryset:
+                    if not PostIngredients.objects.filter(ingredient_id=target_ingredient).exists():
+                        t.ingredient_id = target_ingredient;
+                        t.save();
+                    else:
+                        t.delete();
+
+                migrate_ingredient.delete();
+
+                return HttpResponse('Migrating proccess performed successfully', status=200);
+
+            except Exception as e:
+                print(e);
+                return HttpResponse('Bad Request', status=400);
+
+    else: 
+        return HttpResponse('Unsupported method', status=405);
 
 ### ///////////////////// ###
 

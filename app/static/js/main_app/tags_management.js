@@ -124,7 +124,7 @@ $('#btn_search_mig').on('click', ()=>{
           $('#p_del_mig_info').html('This tag is unclassified too. Cannot be used as a target tag');
         }
       } else {
-        $('#p_del_mig_info').html('The target tag cannot be the same as ' + target_tag);
+        $('#p_del_mig_info').html('The target tag cannot be that');
       }
       $('#p_del_mig_info').prop('hidden', false);
     },
