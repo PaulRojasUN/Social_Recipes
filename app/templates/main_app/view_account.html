@@ -40,6 +40,11 @@
                                     <li>The user doesn't have preferred tags</li>
                             {% endfor %}
                         </ul>
+                        <div class="d-flex justify-content-end">
+                            {% if  can_edit %}
+                                <a class="btn btn-primary" href="{% url 'edit_account' target_username %}">Edit</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -154,7 +154,16 @@ def view_account(request, username):
             target_user = CustomUser.objects.get(username=username);
             tags = TagUser.objects.filter(user_id__id=target_user.id).values('tag_id__name');
 
+            can_edit = False;
+
+            if logged_user == target_user:
+                can_edit = True;
+            
+            if logged_user.groups.first().name == 'admin':
+                can_edit = True;
+
             context = {
+                        'can_edit': can_edit,
                         'name':target_user.first_name,
                         'target_username':target_user.username,
                         'logged_username':logged_user.username,
