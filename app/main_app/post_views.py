@@ -160,6 +160,62 @@ def set_classified_tag(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+
+
+def migrate_tag(request):
+    if request.method == 'POST':
+            try:
+                obj = request.POST;
+            
+                migrate_tag =  Tag.objects.get(name=obj['migrate_tag'].lower());
+
+                target_tag =   Tag.objects.get(name=obj['target_tag'].lower());
+
+                # migrate_tag cannot be a classified tag
+                if ClassifiedTag.objects.filter(tag_id=migrate_tag).exists() or migrate_tag == target_tag:
+                    return HttpResponse('Sorry, that is not allowed', status=460);
+
+                # target_tag cannot be unclassified
+                if UnclassifiedTag.objects.filter(tag_id=target_tag).exists():
+                    return HttpResponse('Tag cannot be used as a target tag', status=461);
+    
+
+                # Migrate TagUser instances associated to migrate_tag to target_tag
+
+                user_tags_queryset = TagUser.objects.filter(tag_id=migrate_tag);
+
+                for t in user_tags_queryset:
+                    if not TagUser.objects.filter(tag_id=target_tag).exists():
+                        t.tag_id=target_tag;
+                        t.save();
+                    else:
+                        t.delete(); # If it already exists, delete current.
+                
+
+                # Migrate PostTag instances associated to migrate_tag to target_tag
+
+                post_tags_queryset = TagPost.objects.filter(tag_id=migrate_tag);
+
+                for t in post_tags_queryset:
+                    if not TagPost.objects.filter(tag_id=target_tag).exists():
+                        t.tag_id=target_tag
+                        t.save();
+                    else:
+                        t.delete(); # If it already exists, delete current.
+
+                migrate_tag.delete();
+
+                return HttpResponse('Migrating proccess performed successfully', status=200);
+
+            except Exception as e:
+                print(e);
+                return HttpResponse('Bad Request', status=400);
+
+    else: 
+        return HttpResponse('Unsupported method', status=405);
+
+        
+
 ### /////////////// ###
 
 

@@ -7,7 +7,7 @@ from .models import CustomUser, FollowingUser
 from .models import Tag, ClassifiedTag, UnclassifiedTag, TagUser, TagPost
 
 # Ingredients imports
-from .models import Ingredient, ClassifiedIngredient, UnclassifiedIngredient
+from .models import Ingredient, ClassifiedIngredient, UnclassifiedIngredient, TagIngredient
 
 # Posts imports
 from .models import Post, PostIngredients, PostLike, PostSeed
@@ -21,6 +21,7 @@ admin.site.register(Tag);
 admin.site.register(ClassifiedTag);
 admin.site.register(UnclassifiedTag);
 admin.site.register(TagUser);
+admin.site.register(TagIngredient);
 
 # Ingredients
 admin.site.register(Ingredient);

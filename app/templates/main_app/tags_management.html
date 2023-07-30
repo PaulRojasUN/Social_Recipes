@@ -31,6 +31,14 @@
     <br>
 
     <button id="btn_approve" disabled>Approve</button>
+
+    <br>
+
+    <label for="input_search_mig">Delete and Migrate to</label>
+    <input id="input_search_mig" type="text" autocomplete="off" disabled>
+    <button id="btn_search_mig" autocomplete="off" disabled>Search</button>
+    <button id="btn_del_mig" autocomplete="off" disabled>Delete and Migrate</button>
+    <p id="p_del_mig_info" hidden></p>
 </div>
 <script type="text/javascript" src="{% static 'js/main_app/tags_management.js' %}"></script>
 {% endblock %}
