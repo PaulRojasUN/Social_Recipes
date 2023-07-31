@@ -45,8 +45,22 @@ def register(request):
 def home(request):
     name = "";
     try:
-        name = request.user.username;
+        user = request.user;
+
+        name = user.username;
+
+        admin_access, moderator_access = False, False;
+
+        user_group = user.groups.first().name;
+
+        if user_group == 'admin':
+            admin_access = True;
+        elif user_group == 'moderators':
+            moderator_access = True;
+
         context = {
+            'admin':admin_access,
+            'moderator':moderator_access,
             'username':name, 
         };
         return render(request, "main_app/home_page.html", context);
