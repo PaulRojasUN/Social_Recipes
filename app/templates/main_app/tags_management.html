@@ -1,44 +1,59 @@
 {% extends 'base.html' %} 
 {% load static %}
 {% block content %}
-<h1>MANAGE TAGS</h1>
-<div>
-    <h2>CREATE TAGS</h2>
-    <label for="input_tag_name">Name</label>
-    <input id="input_tag_name" name="input_tag_name" type="text" placeholder="Name" autocomplete="off">
-    <button id="btn_create_tag">CREATE TAG</button>
 
-    <hr>
-    
-    <h2>EDIT TAG</h2>
-    <label for="input_search_tag">Search Tag</label>
-    <input id="input_search_tag" name="input_search_tag" type="text" autocomplete="off">
-    
-    <br>
-    
-    <button id="btn_search_tag">Search</button>
-    
-    <br>
+<div class="contenedor d-flex justify-content-center align-items-center">
+    <div class="row">
 
-    <label for="fixed_input_tag_name">Name</label>
-    <input id="fixed_input_tag_name" name="fixed_input_tag_name" type="text" autocomplete="off" disabled>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="create-ing-tab" data-bs-toggle="tab" data-bs-target="#create-ing-tab-pane" type="button" role="tab" aria-controls="create-ing-tab-pane" aria-selected="true">Create</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="edit-tag-tab" data-bs-toggle="tab" data-bs-target="#edit-tag-tab-pane" type="button" role="tab" aria-controls="edit-tag-tab-pane" aria-selected="false">Edit</button>
+            </li>
+        </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="create-ing-tab-pane" role="tabpanel" aria-labelledby="create-ing-tab" tabindex="0">
+                <h5 class="mt-2">CREATE TAGS</h5>
+                <div class="mb-2">
+                    <label class="label-form" for="input_tag_name">Name</label>
+                    <input class="form-control" id="input_tag_name" name="input_tag_name" type="text">
+                    
+                </div>
+                <button id="btn_create_tag" class="btn btn-primary">CREATE TAG</button>
+            </div>
+            <div class="tab-pane fade" id="edit-tag-tab-pane" role="tabpanel" aria-labelledby="edit-tag-tab" tabindex="0">
+                <h5 class="mt-2">EDIT TAG</h5>
+                <div class="">
+                    <label class="label-form" for="input_search_tag">Search Tags</label>
+                    <input class="form-control" id="input_search_tag" name="input_search_tag" type="text">
+                    <button id="btn_search_tag" class="btn btn-primary mt-2">Search</button>
+                </div>
+                <div class="mb-2">
+                    <label class="label-form mb-2" for="fixed_input_tag_name">Name</label>
+                    <input id="fixed_input_tag_name" name="fixed_input_tag_name" class="form-control mb-2" type="text">
+                    <input id="input_classified_state" name="input_classified_state" class="form-control mb-2" type="text" disabled>
+                    
+                </div>
+                
+                <hr>
 
-    <br>
+                <button id="btn_approve" class="btn btn-primary">Approve</button>
 
-    <label for="input_classified_state">Classified State</label>
-    <input id="input_classified_state" name="input_classified_state" type="text" autocomplete="off" disabled>
+                <hr>
 
-    <br>
-
-    <button id="btn_approve" disabled>Approve</button>
-
-    <br>
-
-    <label for="input_search_mig">Delete and Migrate to</label>
-    <input id="input_search_mig" type="text" autocomplete="off" disabled>
-    <button id="btn_search_mig" autocomplete="off" disabled>Search</button>
-    <button id="btn_del_mig" autocomplete="off" disabled>Delete and Migrate</button>
-    <p id="p_del_mig_info" hidden></p>
+                <div class="mb-2">
+                    <label class="label-form mb-2" for="input_search_mig">Delete and Migrate to</label>
+                    <input id="input_search_mig" name="input_search_mig" class="form-control mb-2" type="text">
+                    <button id="btn_search_mig" class="btn btn-primary">Search</button>
+                    <button id="btn_del_mig" class="btn btn-primary">Delete and Migrate</button>
+                    <p id="p_del_mig_info" hidden></p>
+                </div>
+            </div>            
+    </div>
 </div>
+
+
 <script type="text/javascript" src="{% static 'js/main_app/tags_management.js' %}"></script>
 {% endblock %}
