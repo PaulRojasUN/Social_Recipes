@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="d-flex flex-row justify-content-center">
+        <div class="d-flex align-items-center">        
+            <div class="form-outline">
+                <label for="input_search" class="form-label">Search</label>
+                <input id="input_search" name="input_search" type="text" class="form-control">
+                <button id="btn_search" class="btn btn-primary mt-2">Search</button>
+            </div>
+        </div>
+
+    </div>
+    
+</div>
+
+
+<script src="{% static 'js/main_app/search.js' %}"></script>
+
+{% endblock %}

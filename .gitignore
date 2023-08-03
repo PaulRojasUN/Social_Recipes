@@ -4,4 +4,5 @@
 *settings.py
 app/main_app/migrations/*
 !app/main_app/migrations/__init__.py
-
+app/static/node_modules
+app/staticfiles

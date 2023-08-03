@@ -1,11 +1,27 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser, TagUser, FollowingUser, priviliged_access
-###
+from django.db.models import Q
+from django.urls import reverse
 from django.http import HttpResponse
 from main_app.forms import CustomUserCreationForm
 from django.contrib.auth.decorators import user_passes_test
+
+
+# Users
+from .models import CustomUser, FollowingUser
+
+# Tag
+from .models import TagUser
+
+# Post
+from .models import Post, PostLike
+
+# Access 
+from .models import priviliged_access, admin_access
+
+###
+
 
 
 ### RENDERING ENDPOINTS ###
@@ -29,8 +45,22 @@ def register(request):
 def home(request):
     name = "";
     try:
-        name = request.user.username;
+        user = request.user;
+
+        name = user.username;
+
+        admin_access, moderator_access = False, False;
+
+        user_group = user.groups.first().name;
+
+        if user_group == 'admin':
+            admin_access = True;
+        elif user_group == 'moderators':
+            moderator_access = True;
+
         context = {
+            'admin':admin_access,
+            'moderator':moderator_access,
             'username':name, 
         };
         return render(request, "main_app/home_page.html", context);
@@ -41,21 +71,92 @@ def home(request):
 @login_required
 def create_post(request):
     if request.method == 'GET':
-        return HttpResponse('create_post');
+        return render(request, 'main_app/create_post.html');
     else:
         return HttpResponse('Unsupported method', status=405);
 
 @login_required
 def edit_post(request, id):
     if request.method == 'GET':
-        return HttpResponse('edit post' + str(id));
+
+        try:
+            logged_in_user = request.user;
+
+            if not logged_in_user.groups.first().name == 'admin':
+            
+                if not Post.objects.filter(Q(id=id) & Q(author_user_id=logged_in_user)).exists():                
+                    return HttpResponse('Forbidden', status=403);  
+
+            context = {
+                'post_id':id,
+            };
+                
+            return render(request, 'main_app/edit_post.html', context);
+                  
+        except Exception:
+            return HttpResponse('Something went wrong', status=405);
+    
     else:
         return HttpResponse('Unsupported method', status=405);
 
 @login_required
 def view_post(request, id):
     if request.method == 'GET':
-        return HttpResponse('view post' + str(id));
+        try:
+            if not Post.objects.filter(id=id).exists():
+                raise Exception('Such post does not exist');
+
+            user = request.user;
+
+            post = Post.objects.get(id=id);
+
+            post_owner = post.author_user_id;
+
+            is_hidden = True;
+
+            if not user.groups.first().name == 'admin':
+                is_owner = user == post_owner;
+                if is_owner:
+                    is_hidden = False;
+                if (post.visibility == 2):
+                    if not is_owner:
+                        return HttpResponse('Forbidden', status=403);
+                elif (post.visibility == 1):
+                    if FollowingUser.objects.filter(Q(follower_user_id=user)&Q(target_user_id=post_owner)).exists():
+                        return HttpResponse('Forbidden', status=403);
+            else:
+                is_hidden = False;
+
+            context = {
+                'post_id':post.id,
+                'post_owner_name':post_owner.first_name,
+                'is_hidden':is_hidden,
+            }
+
+            return render(request, 'main_app/view_post.html', context); 
+                    
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+
+@login_required
+def view_account_redirect(request):
+    if request.method == 'GET':
+        try:
+            username = request.user.username;
+            
+            print(type(username));
+
+            url = reverse('view_account', args=[username])
+
+            return redirect(url);
+
+        except Exception as e:
+            print(e);
+            return HttpResponse('User was not found', status=404);
     else:
         return HttpResponse('Unsupported method', status=405);
 
@@ -66,12 +167,17 @@ def view_account(request, username):
             logged_user = request.user;
             target_user = CustomUser.objects.get(username=username);
             tags = TagUser.objects.filter(user_id__id=target_user.id).values('tag_id__name');
-            
-            print(target_user.username);
-            print(logged_user.username);
 
+            can_edit = False;
+
+            if logged_user == target_user:
+                can_edit = True;
+            
+            if logged_user.groups.first().name == 'admin':
+                can_edit = True;
 
             context = {
+                        'can_edit': can_edit,
                         'name':target_user.first_name,
                         'target_username':target_user.username,
                         'logged_username':logged_user.username,
@@ -86,9 +192,50 @@ def view_account(request, username):
 
 def edit_account(request, username):
     if request.method == 'GET':
-        return HttpResponse('edit account ' + str(username));
+        try:
+            logged_user = request.user;
+            target_user = CustomUser.objects.get(username=username);
+
+            own_account = logged_user.id == target_user.id;
+
+            is_admin = logged_user.groups.first().name=='admin';
+
+            if (own_account or is_admin):
+                tags = TagUser.objects.filter(user_id__id=target_user.id).values('tag_id__name');
+
+
+                context = {
+                            'name':target_user.first_name,
+                            'target_username':target_user.username,
+                            'tags':tags,
+                            };
+                return render(request, 'main_app/edit_account.html', context);
+        
+            else:
+                return HttpResponse('Sorry, you cannot access this site', status=403);
+        except Exception as e:
+            print(e);
+            return HttpResponse('User was not found', status=404)
     else:
         return HttpResponse('Unsupported method', status=405);
+
+
+@login_required
+def social_redirect(request):
+    if request.method == 'GET':
+        try:
+            
+            username = request.user.username;
+
+            url = reverse('social', args=[username]);
+
+            return redirect(url);
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=404);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
 
 @login_required
 def social(request, username):
@@ -101,9 +248,9 @@ def social(request, username):
 
             target_id = target_user.id;
 
-            follower_users = FollowingUser.objects.filter(follower_user_id__id=target_id).values('target_user_id__first_name');
+            follower_users = FollowingUser.objects.filter(follower_user_id__id=target_id).values('target_user_id__first_name', 'target_user_id__username');
 
-            target_users = FollowingUser.objects.filter(target_user_id__id=target_id).values('follower_user_id__first_name');
+            target_users = FollowingUser.objects.filter(target_user_id__id=target_id).values('follower_user_id__first_name','follower_user_id__username');
 
             context = {
                 'target_user_name': target_user_name,
@@ -120,21 +267,30 @@ def social(request, username):
 
 @login_required
 def filter(request):
-    if request.method == 'GET':
-        
-        obj = request.GET;
+    if request.method == 'GET':    
+        try:
+            obj = request.GET;
 
-        for i in obj:
-            print(str(i) + ":" + str(obj[i]));
-            
-        return HttpResponse('filter');
-    else:
+            username = request.user.username,
+            print(type(request.user.username))
+            print("sdsa")
+            context = {
+                'par1':obj['par1'],
+                'username':str(username[0]),#str(username),
+            }
+
+            return render(request, 'main_app/filter.html', context);
+        except Exception as e:
+            print(e);
+            return HttpResponse('Bad Request', status=400);    
+        
+    else: 
         return HttpResponse('Unsupported method', status=405);
 
 @login_required
 def search(request):
     if request.method == 'GET':
-        return HttpResponse('search');
+        return render(request, 'main_app/search.html');
     else:
         return HttpResponse('Unsupported method', status=405);
 
@@ -146,11 +302,25 @@ def tags_manager(request):
         return HttpResponse('Unsupported method', status=405);
 
 
-@user_passes_test(priviliged_access)
+@user_passes_test(admin_access)
 def admin_manage_users(request):
     if request.method == 'GET':
         return render(request, 'main_app/admin_manage_users.html');
     else:   
+        return HttpResponse('Unsupported method', status=405);
+
+@user_passes_test(priviliged_access)
+def tags_management(request):
+    if request.method == 'GET':
+        return render(request, 'main_app/tags_management.html');
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+@user_passes_test(priviliged_access)
+def ingredients_management(request):
+    if request.method == 'GET':
+        return render(request, 'main_app/ingredients_management.html');
+    else:
         return HttpResponse('Unsupported method', status=405);
 
 ### ////////////////// ###

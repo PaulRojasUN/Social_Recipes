@@ -1,19 +1,67 @@
 {% extends 'base.html' %} 
 {% block content %}
-<div>
+<!-- <div>
     <h1>Social</h1>
     <strong>List of users that are followed by {{ target_user_name }}</strong>
     <ul>
         {% for user in follower_users %}
-            <li>{{user.target_user_id__first_name}}</ul>
+            <li><a href="{% url 'view_account' user.target_user_id__username %}">{{user.target_user_id__first_name}}</a></li>
         {% endfor %}
     </ul>
     <hr>
     <strong> List of users that follow {{ target_user_name }}</strong>
     <ul>
         {% for user in target_users %}
-            <li>{{user.follower_user_id__first_name}}</ul>
+            <li><a href="{% url 'view_account' user.follower_user_id__username %}">{{user.follower_user_id__first_name}}</a></li>
         {% endfor %}
     </ul>
+
+    
+</div> -->
+
+<div class="contenedor d-flex justify-content-center align-items-center">
+        
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <h1>{{ target_user_name }}'s social page</h1>
+        </div>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="following-tab" data-bs-toggle="tab" data-bs-target="#following-tab-pane" type="button" role="tab" aria-controls="following-tab-pane" aria-selected="true">Following</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="follower-tab" data-bs-toggle="tab" data-bs-target="#follower-tab-pane" type="button" role="tab" aria-controls="follower-tab-pane" aria-selected="false">Follower</button>
+            </li>
+        </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="following-tab-pane" role="tabpanel" aria-labelledby="following-tab" tabindex="0">
+                <ul class="mini-list">
+                    {% for user in follower_users %}
+                    
+                        <li>
+                            <a href="{% url 'view_account' user.target_user_id__username %}">
+                                <span class="badge text-bg-light">
+                                    {{user.target_user_id__first_name}}
+                                </span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="tab-pane fade" id="follower-tab-pane" role="tabpanel" aria-labelledby="follower-tab" tabindex="0">
+                <ul class="mini-list">
+                    {% for user in target_users %}
+                        <li>
+                            <a href="{% url 'view_account' user.follower_user_id__username %}">
+                                <span class="badge text-bg-light">
+                                    {{user.follower_user_id__first_name}}
+                                </span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+          </div>
+    </div>
 </div>
 {% endblock %}
