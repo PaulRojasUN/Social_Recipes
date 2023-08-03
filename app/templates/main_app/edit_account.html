@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div>
-    <h1>EDIT ACCOUNT</h1>
+<!-- <div>
     <div class="form-group">
         <label for="input_name">Name</label>
         <input id="input_name" name="input_name" type="text" value={{name}} autocomplete="off" class="form-control">
@@ -24,13 +23,72 @@
         <br>
         <button id="btn_add_tag" disabled>Add Tag</button>
 
-        <input id="input_target_username" type="hidden" value="{{ target_username }}"">
+        <input id="input_target_username" type="hidden" value="{{ target_username }}">
 
         <br><br>
         <button id="btn_save_changes" autocomplete="off" disabled>Save Changes</button>
         <br>
         <a href="{% url 'home' %}">Back</a>
     </div>
+</div> -->
+
+<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div>    
+        <h1 class="text-center">EDIT ACCOUNT</h1>
+        <div class="view-account-form">
+            <div class="row">
+                
+                <div class="col-12 col-md-6">
+                    <div class="mb-3">
+                        <label for="input_name">Name</label>
+                        <input id="input_name" name="input_name" type="text" value={{name}} autocomplete="off" class="form-control">
+                    </div>
+            
+                    <label for="input_search_tag">Search Tag</label>
+                    <input id="input_search_tag" name="input_search_tag" type="text" class="form-control mb-2" autocomplete="off">
+                    <button id="btn_search_tag" class="btn btn-secondary mb-2">Search</button>
+                    <span id="span_found_tag"></span>
+                    <br>
+                    <button id="btn_add_tag" class="btn btn-success" disabled>Add Tag</button>
+
+
+
+
+
+                </div>
+                
+                <div class="col-12 col-md-6">
+                    <div class="mb-3">
+                        <label for="username">Username</label>
+                        <input id="target_username" name="username" type="text" value={{target_username}} class="form-control" disabled>
+                    </div>
+                    <label>Interest Tags</label>
+                    <ul id="ul_tags" class="mini-list">
+                        {% for tag in tags %}
+                                <li><span class="badge rounded-pill text-bg-secondary">{{tag.tag_id__name}}</span></li>
+                            {% empty %}
+                                <li>The user doesn't have preferred tags</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <input id="input_target_username" type="hidden" value="{{ target_username }}">
+
+                    
+                </div>
+                
+                
+            </div>
+            <div class="d-flex justify-content-around">
+                <a class="btn btn-danger" href="{% url 'home' %}" >Back</a>
+                <button id="btn_save_changes" class="btn btn-success" autocomplete="off" disabled>Save Changes</button>
+            </div>
+
+        </div>
+    </div>
+        
 </div>
+
+
+
 <script src="{% static 'js/main_app/edit_account.js' %}"></script>
 {% endblock %}

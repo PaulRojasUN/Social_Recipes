@@ -12,8 +12,10 @@ urlpatterns = [
     path('create_post/', views.create_post, name='create_post'),
     path('edit_post/<slug:id>/', views.edit_post, name='edit_post'),
     path('view_post/<slug:id>/', views.view_post, name='view_post'),
+    path('view_account_redirect/', views.view_account_redirect, name='view_account_redirect'),
     path('view_account/<slug:username>/', views.view_account, name='view_account'),
     path('edit_account/<slug:username>/', views.edit_account , name='edit_account'),
+    path('social_redirect/', views.social_redirect, name='social_redirect'),
     path('social/<slug:username>/', views.social, name='social'),
     path('filter/', views.filter, name='filter'),
     path('search/', views.search, name='search'),
@@ -37,6 +39,9 @@ urlpatterns = [
     path('add_remove_like_post/', post_views.add_remove_like_post, name='add_remove_like_post'),
     path('increment_post_seed/', post_views.increment_post_seed, name='increment_post_seed'),
     path('reset_posts/', post_views.reset_posts, name='reset_posts'),
+    path('delete_post/', post_views.delete_post, name='delete_post'),
+    path('migrate_tag/', post_views.migrate_tag, name='migrate_tag'),
+    path('migrate_ingredient/', post_views.migrate_ingredient, name='migrate_ingredient'),
 
     # UTILS ENDPOINTS
     path('prepare_view_account/<slug:target_username>', view_utils.prepare_view_account, name='prepare_view_account'),

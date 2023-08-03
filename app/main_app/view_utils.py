@@ -37,11 +37,22 @@ def get_homepage_posts(request):
             ).annotate(followed=Count('target_user_id')
             ).values('followed');
 
+
+            # Indicates if the current logged-in user has liked the posts in displays
             liked_posts = PostLike.objects.filter(
+                Q(post_id=OuterRef('id'))&Q(user_id=user.id)
+            ).values('post_id'
+            ).annotate(likes_count=Count('id')
+            ).values('likes_count');
+
+            # Retrieve the amount of likes of each post
+            posts_likes = PostLike.objects.filter(
                 post_id=OuterRef('id')
             ).values('post_id'
             ).annotate(likes_count=Count('id')
             ).values('likes_count');
+
+
 
             posts = list(Post.objects.values(
                 'id',
@@ -52,6 +63,7 @@ def get_homepage_posts(request):
                 'visibility',
                 'post_date',
             ).annotate(liked=Subquery(liked_posts),
+                       likes=Subquery(posts_likes),
                        visible=Subquery(external_visible)
             ).filter(Q(visibility=0) | Q(author_user_id=user) | Q(Q(visibility=1) & Q(visible=1)))
             .order_by('-post_date'))[seed*block_size:block_size*(seed+1)];
@@ -176,7 +188,7 @@ def prepare_admin_manage_users(request, username):
 
 
 
-@user_passes_test(priviliged_access)
+@login_required
 def get_tag_information(request, tag_name):
     if request.method == 'GET':
         try:
@@ -194,7 +206,7 @@ def get_tag_information(request, tag_name):
                 'classified':classified,
             }
             
-            return JsonResponse(obj);
+            return JsonResponse(obj, status= 200);
         except Exception as e:
             print(e);
             return HttpResponse('Bad request', status=400);
@@ -227,7 +239,7 @@ def get_interested_tags_user(request, username):
 
 ### get_ingredient_information ###
 
-@user_passes_test(priviliged_access)
+@login_required
 def get_ingredient_information(request, ingredient_name):
     if request.method == 'GET':
         try:
@@ -245,7 +257,7 @@ def get_ingredient_information(request, ingredient_name):
                 'classified':classified,
             }
             
-            return JsonResponse(obj);
+            return JsonResponse(obj, status=200);
         except Exception as e:
             print(e);
             return HttpResponse('Bad request', status=400);
@@ -321,8 +333,6 @@ def filter_search(request):
             recipes = list(Post.objects.filter(recipe_name__contains=obj['par1']).values_list('recipe_name', flat=True));
             users = list(CustomUser.objects.filter(first_name__contains=obj['par1']).values_list('username', flat=True));
 
-            print(users)
-
             external_visible = FollowingUser.objects.filter(
                 Q(follower_user_id=user.id) & Q(target_user_id=OuterRef('author_user_id'))
             ).values('target_user_id'
@@ -330,6 +340,12 @@ def filter_search(request):
             ).values('followed');
 
             liked_posts = PostLike.objects.filter(
+               Q(post_id=OuterRef('id'))&Q(user_id=user.id)
+            ).values('post_id'
+            ).annotate(likes_count=Count('id')
+            ).values('likes_count');
+
+            posts_likes = PostLike.objects.filter(
                 post_id=OuterRef('id')
             ).values('post_id'
             ).annotate(likes_count=Count('id')
@@ -344,6 +360,7 @@ def filter_search(request):
                 'visibility',
                 'post_date',
             ).annotate(liked=Subquery(liked_posts),
+                       likes=Subquery(posts_likes),
                        visible=Subquery(external_visible)
             ).filter( Q(Q(visibility=0) | Q(author_user_id=user) | Q(Q(visibility=1) & Q(visible=1))) & 
                      Q(Q(recipe_name__in=recipes) | Q(author_user_id__username__in=users)))

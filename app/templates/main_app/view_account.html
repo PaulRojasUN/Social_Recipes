@@ -2,36 +2,57 @@
 {% load static %}
 {% block content %}
 <div>
-    <h1>VIEW ACCOUNT</h1>
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input name="name" type="text" value={{name}} class="form-control" disabled>
 
-        <label for="username">Username</label>
-        <input id="target_username" name="username" type="text" value={{target_username}} class="form-control" disabled>
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+ 
 
-        <label for="tags">Interest Tags</label>
-        <ul>
-            {% for tag in tags %}
-                    <li>{{tag.tag_id__name}}</li>
-                {% empty %}
-                    <li>The user doesn't have preferred tags</li>
-            {% endfor %}
-        </ul>
-        
-        <a href="{% url 'social' target_username %}">Social</a>
-        <br>
-        <a href="{% url 'filter' %}?par1={{ target_username }}">User's Posts</a>
-        <br>
-
-        <div class="form">
-            <input id="input_follower" name="follower_user" type="hidden" value="{{ logged_username }}"">
-            <input id="input_target" name="target_user" type="hidden" value="{{ target_username }}"">
-            <button id="btn_follow">Follow User</button>
+        <div>    
+            <h1 class="text-center">VIEW ACCOUNT</h1>
+            <div class="view-account-form">
+                <div class="row">
+                    
+                    <div class="col-12 col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label" for="name">Name</label>
+                            <input name="name" type="text" value={{name}} class="form-control" disabled>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Username</label>
+                            <input id="target_username" name="username" type="text" value={{target_username}} class="form-control" disabled>
+                        </div>
+                        <a class="btn btn-secondary" href="{% url 'social' target_username %}">Social</a>
+                        <a class="btn btn-secondary" href="{% url 'filter' %}?par1={{ target_username }}">User's Posts</a>
+                        <div class="form">
+                            <input id="input_follower" name="follower_user" type="hidden" value="{{ logged_username }}"">
+                            <input id="input_target" name="target_user" type="hidden" value="{{ target_username }}"">
+                            <button id="btn_follow" class="btn btn-secondary">Follow User</button>
+                        </div>
+                        <a class="btn btn-danger" href="{% url 'home' %}" >Back</a>
+                    </div>
+                    
+                    <div class="col-12 col-md-6">
+                        <label for="tags">Interest Tags</label>
+                        <ul class="mini-list">
+                            {% for tag in tags %}
+                                    <li><span class="badge rounded-pill text-bg-secondary">{{tag.tag_id__name}}</span></li>
+                                {% empty %}
+                                    <li>The user doesn't have preferred tags</li>
+                            {% endfor %}
+                        </ul>
+                        <div class="d-flex justify-content-end">
+                            {% if  can_edit %}
+                                <a class="btn btn-primary" href="{% url 'edit_account' target_username %}">Edit</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br>
-        <a href="{% url 'home' %}">Back</a>
-    </div>
+            
+</div>
+
+
     <script type="text/javascript" src='{% static "js/main_app/view_account.js" %}'></script>
 </div>
 {% endblock %}

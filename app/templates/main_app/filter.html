@@ -1,23 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<h1>Results</h1>
-<a href="{% url 'view_account' username %}" class="btn btn-primary">My Account</a>
-
-<a href="{% url 'create_post' %}" class="btn btn-primary">Create New Recipe</a>
-
-<a href="{% url 'search' %}" class="btn btn-primary">Search</a>
-
-<a href="{% url 'social' username %}" class="btn btn-primary">Social</a>
-
-<a href="{% url 'home' %}" class="btn btn-primary">Home Page</a>
-
-<a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-
 <input id="input_par1" type="hidden" value="{{par1}}">
 
-<div id="posts_container">
 
+<div class="container">
+    <div id="posts_container">
+
+    </div>
+    
 </div>
 
 <script src="{% static 'js/main_app/filter.js' %}"></script>

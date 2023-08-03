@@ -3,7 +3,10 @@ function update_ingredients_list(){
     let ingredients = localStorage.getItem('ingredients').split(',');
     $('#ul_ingredients').html('');
     if (ingredients[0] != "") {
-        ingredients.forEach(e => $('#ul_ingredients').append('<li>' + e + '<button id=\"'+ 'btn_li_ing_' + e +'\">x</button></li>'));
+        ingredients.forEach(e => $('#ul_ingredients').append('<li>' +
+        '<span class=\"badge rounded-pill text-bg-secondary\">' +
+        e + '</span>' + '<button id=\"' + 'btn_li_ing_' + e +
+        '\" class=\"btn btn-danger"\"><i class="bi bi-x-circle delete-from-ul"></i></button></li>'));
     }
     
 }
@@ -13,7 +16,10 @@ function update_tags_list(){
     let tags = localStorage.getItem('tags').split(',');
     $('#ul_tags').html('');
     if (tags[0] != "") {
-        tags.forEach(e => $('#ul_tags').append('<li>' + e + '<button id=\"'+ 'btn_li_tags_' + e +'\">x</button></li>'));
+        tags.forEach(e => $('#ul_tags').append('<li>' +
+        '<span class=\"badge rounded-pill text-bg-secondary\">' +
+        e + '</span>' + '<button id=\"' + 'btn_li_tags_' + e +
+        '\" class=\"btn btn-danger"\"><i class="bi bi-x-circle delete-from-ul"></i></button></li>'));
     }
     
 }
@@ -89,7 +95,9 @@ $('#btn_modal_search_ingredient').on('click', ()=>{
                 url:'/get_ingredient_information/'+input_modal_add_ingredient,
                 datatype:'json',
                 type:'GET',
-                success:function(data){
+                success:function(data, status, xhr){
+                    let status_code = xhr.status;
+                    console.log(status_code)
                     $('#btn_modal_add_ingredient').prop('disabled', false);
                     $('#span_modal_add_ingredient').html('Ingredient was found');
                 },
@@ -288,6 +296,35 @@ $('#btn_modal_create_tag').on('click', ()=>{
 
 });
 
+// Delete Post
+
+$('#btn_delete_post').on('click', ()=>{
+
+    if (confirm('Are you sure that you want to delete this post?')){
+
+        let post_id = $('#input_post_id').val();
+
+        let data = {
+            'post_id':post_id,
+        };
+
+        $.ajax({
+            url:'/delete_post/',
+            datatype:'text',
+            type:'POST',
+            data:data,
+            success:function(){
+                console.log('Post Deleted Successfully');
+                window.location = '/';
+            },
+            error:function(e){
+                console.log(e);
+            },
+        });
+    }
+});
+
+
 // Update Post
 
 
@@ -321,6 +358,7 @@ $('#btn_edit_post').on('click', ()=> {
         data:data,
         success:function(data){
             console.log('Post has been successfully updated');
+            window.location = '/';
         },
         error:function(e){
             console.log(e);

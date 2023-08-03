@@ -160,6 +160,62 @@ def set_classified_tag(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+
+@user_passes_test(priviliged_access)
+def migrate_tag(request):
+    if request.method == 'POST':
+            try:
+                obj = request.POST;
+            
+                migrate_tag =  Tag.objects.get(name=obj['migrate_tag'].lower());
+
+                target_tag =   Tag.objects.get(name=obj['target_tag'].lower());
+
+                # migrate_tag cannot be a classified tag
+                if ClassifiedTag.objects.filter(tag_id=migrate_tag).exists() or migrate_tag == target_tag:
+                    return HttpResponse('Sorry, that is not allowed', status=460);
+
+                # target_tag cannot be unclassified
+                if UnclassifiedTag.objects.filter(tag_id=target_tag).exists():
+                    return HttpResponse('Tag cannot be used as a target tag', status=461);
+    
+
+                # Migrate TagUser instances associated to migrate_tag to target_tag
+
+                user_tags_queryset = TagUser.objects.filter(tag_id=migrate_tag);
+
+                for t in user_tags_queryset:
+                    if not TagUser.objects.filter(tag_id=target_tag).exists():
+                        t.tag_id=target_tag;
+                        t.save();
+                    else:
+                        t.delete(); # If it already exists, delete current.
+                
+
+                # Migrate PostTag instances associated to migrate_tag to target_tag
+
+                post_tags_queryset = TagPost.objects.filter(tag_id=migrate_tag);
+
+                for t in post_tags_queryset:
+                    if not TagPost.objects.filter(tag_id=target_tag).exists():
+                        t.tag_id=target_tag
+                        t.save();
+                    else:
+                        t.delete(); # If it already exists, delete current.
+
+                migrate_tag.delete();
+
+                return HttpResponse('Migrating proccess performed successfully', status=200);
+
+            except Exception as e:
+                print(e);
+                return HttpResponse('Bad Request', status=400);
+
+    else: 
+        return HttpResponse('Unsupported method', status=405);
+
+        
+
 ### /////////////// ###
 
 
@@ -303,6 +359,35 @@ def set_classified_ingredient(request):
     else:
         return HttpResponse('Unsupported method', status=405);
 
+@user_passes_test(priviliged_access)
+def migrate_ingredient(request):
+    if request.method == 'POST':
+            try:
+                obj = request.POST;
+            
+                migrate_ingredient = Ingredient.objects.get(name=obj['migrate_ingredient'].lower());
+
+                target_ingredient = Ingredient.objects.get(name=obj['target_ingredient'].lower());
+
+                post_ing_queryset = PostIngredients.objects.filter(ingredient_id=migrate_ingredient);
+                
+                for t in post_ing_queryset:
+                    if not PostIngredients.objects.filter(ingredient_id=target_ingredient).exists():
+                        t.ingredient_id = target_ingredient;
+                        t.save();
+                    else:
+                        t.delete();
+
+                migrate_ingredient.delete();
+
+                return HttpResponse('Migrating proccess performed successfully', status=200);
+
+            except Exception as e:
+                print(e);
+                return HttpResponse('Bad Request', status=400);
+
+    else: 
+        return HttpResponse('Unsupported method', status=405);
 
 ### ///////////////////// ###
 
@@ -549,6 +634,33 @@ def edit_post(request):
             return HttpResponse('An error has ocurred', status=400);
     else:
         return HttpResponse('Unsupported method', status=405);
+
+
+@login_required
+def delete_post(request):
+    if request.method == 'POST':
+        try:
+            obj = request.POST;
+        
+            if not Post.objects.filter(id=obj['post_id']).exists():
+                raise Exception('Such post does not exist');
+    
+            user = request.user;
+            
+            post = Post.objects.get(id=obj['post_id']);
+
+            if not user.groups.first().name == 'admin':
+                if not post.author_user_id == user:
+                    return HttpResponse('Forbidden', status=403);             
+    
+            post.delete();
+        
+            return HttpResponse('Post deleted successfully', status=200);     
+            
+        except Exception:
+            return HttpResponse('Bad Request', status=405);     
+    else:
+        return HttpResponse('Unsupported method', status=405); 
 
 ### //////// ###
 

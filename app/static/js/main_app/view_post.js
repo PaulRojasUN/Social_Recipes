@@ -3,7 +3,9 @@ function update_ingredients_list(){
     let ingredients = localStorage.getItem('ingredients').split(',');
     $('#ul_ingredients').html('');
     if (ingredients[0] != "") {
-        ingredients.forEach(e => $('#ul_ingredients').append('<li>' + e + '</li>'));
+        ingredients.forEach(e => $('#ul_ingredients').append('<li>' +
+        '<span class=\"badge rounded-pill text-bg-secondary\">' +
+        e + '</span>' + '</li>'));
     }
     
 }
@@ -13,7 +15,9 @@ function update_tags_list(){
     let tags = localStorage.getItem('tags').split(',');
     $('#ul_tags').html('');
     if (tags[0] != "") {
-        tags.forEach(e => $('#ul_tags').append('<li>' + e + '</li>'));
+        tags.forEach(e => $('#ul_tags').append('<li>' +
+        '<span class=\"badge rounded-pill text-bg-secondary\">' +
+        e + '</span>' + '</li>'));
     }
     
 }

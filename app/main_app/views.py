@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Subquery, OuterRef, Count
+from django.db.models import Q
+from django.urls import reverse
+from django.http import HttpResponse
+from main_app.forms import CustomUserCreationForm
+from django.contrib.auth.decorators import user_passes_test
 
 
 # Users
@@ -17,9 +21,7 @@ from .models import Post, PostLike
 from .models import priviliged_access, admin_access
 
 ###
-from django.http import HttpResponse, JsonResponse
-from main_app.forms import CustomUserCreationForm
-from django.contrib.auth.decorators import user_passes_test
+
 
 
 ### RENDERING ENDPOINTS ###
@@ -43,8 +45,22 @@ def register(request):
 def home(request):
     name = "";
     try:
-        name = request.user.username;
+        user = request.user;
+
+        name = user.username;
+
+        admin_access, moderator_access = False, False;
+
+        user_group = user.groups.first().name;
+
+        if user_group == 'admin':
+            admin_access = True;
+        elif user_group == 'moderators':
+            moderator_access = True;
+
         context = {
+            'admin':admin_access,
+            'moderator':moderator_access,
             'username':name, 
         };
         return render(request, "main_app/home_page.html", context);
@@ -96,24 +112,51 @@ def view_post(request, id):
 
             post_owner = post.author_user_id;
 
-            context = {
-                'post_id':post.id,
-                'post_owner_name':post_owner.first_name,
-            }
+            is_hidden = True;
 
             if not user.groups.first().name == 'admin':
+                is_owner = user == post_owner;
+                if is_owner:
+                    is_hidden = False;
                 if (post.visibility == 2):
-                    if not user == post_owner:
+                    if not is_owner:
                         return HttpResponse('Forbidden', status=403);
                 elif (post.visibility == 1):
                     if FollowingUser.objects.filter(Q(follower_user_id=user)&Q(target_user_id=post_owner)).exists():
                         return HttpResponse('Forbidden', status=403);
+            else:
+                is_hidden = False;
+
+            context = {
+                'post_id':post.id,
+                'post_owner_name':post_owner.first_name,
+                'is_hidden':is_hidden,
+            }
 
             return render(request, 'main_app/view_post.html', context); 
                     
         except Exception as e:
             print(e);
             return HttpResponse('Bad Request', status=400);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
+
+@login_required
+def view_account_redirect(request):
+    if request.method == 'GET':
+        try:
+            username = request.user.username;
+            
+            print(type(username));
+
+            url = reverse('view_account', args=[username])
+
+            return redirect(url);
+
+        except Exception as e:
+            print(e);
+            return HttpResponse('User was not found', status=404);
     else:
         return HttpResponse('Unsupported method', status=405);
 
@@ -125,7 +168,16 @@ def view_account(request, username):
             target_user = CustomUser.objects.get(username=username);
             tags = TagUser.objects.filter(user_id__id=target_user.id).values('tag_id__name');
 
+            can_edit = False;
+
+            if logged_user == target_user:
+                can_edit = True;
+            
+            if logged_user.groups.first().name == 'admin':
+                can_edit = True;
+
             context = {
+                        'can_edit': can_edit,
                         'name':target_user.first_name,
                         'target_username':target_user.username,
                         'logged_username':logged_user.username,
@@ -166,6 +218,24 @@ def edit_account(request, username):
             return HttpResponse('User was not found', status=404)
     else:
         return HttpResponse('Unsupported method', status=405);
+
+
+@login_required
+def social_redirect(request):
+    if request.method == 'GET':
+        try:
+            
+            username = request.user.username;
+
+            url = reverse('social', args=[username]);
+
+            return redirect(url);
+        except Exception as e:
+            print(e);
+            return HttpResponse('An error has ocurred', status=404);
+    else:
+        return HttpResponse('Unsupported method', status=405);
+
 
 @login_required
 def social(request, username):
