@@ -1,10 +1,7 @@
-FROM debian
-# RUN apk update
-# RUN apk add python3
-# RUN apk add py3-pip
+FROM python:3
 
-# COPY ./app /home/socialrecipes/
+COPY ./app /home/socialrecipes/
 COPY ./requirements.txt /home/socialrecipes/
-COPY ./scripts /home/scripts/
+COPY ./scripts /
 
-#RUN pip3 install -r /home/socialrecipes/requirements.txt
+RUN pip install -r /home/socialrecipes/requirements.txt
