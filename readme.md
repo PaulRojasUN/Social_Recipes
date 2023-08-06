@@ -21,6 +21,7 @@ docker exec -it myapp bash [script]
 Run the following scripts to start the app:
 
 ```
+docker exec -it myapp bash /makemigrations.sh
 docker exec -it myapp bash /migrate.sh
 docker exec -it myapp bash /createsuperuser.sh    #### This will prompt you into a super user creation form
 docker exec -it myapp bash /runserver.sh
